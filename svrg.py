@@ -3,6 +3,7 @@ import copy
 import functools
 import json
 import random
+
 import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
@@ -24,8 +25,9 @@ class SVRGTrainer:
         print(model)
 
         # Perform several epochs of SGD as initialization for SVRG
-        warmup_optimizer = torch.optim.SGD(target_model.parameters(), lr=learning_rate)
-        for warmup_epoch in range(1, num_warmup_epochs+1):
+        warmup_optimizer = torch.optim.SGD(
+            target_model.parameters(), lr=learning_rate)
+        for warmup_epoch in range(1, num_warmup_epochs + 1):
             warmup_loss = 0
             for batch in train_loader:
                 data, label = (x.to(device) for x in batch)
@@ -37,11 +39,12 @@ class SVRGTrainer:
                 warmup_loss += loss.item() * len(data)
             avg_warmup_loss = warmup_loss / len(train_loader.dataset)
             grad_epoch += 1
-            metrics.append({'grad_epoch': grad_epoch, 'train_loss': avg_warmup_loss})
+            metrics.append({'grad_epoch': grad_epoch,
+                            'train_loss': avg_warmup_loss})
             print('[Warmup {}/{}] # grad/n: {}, loss: {:.02f}'.format(
                 warmup_epoch, num_warmup_epochs, grad_epoch, avg_warmup_loss))
 
-        for epoch in range(1, num_outer_epochs+1):
+        for epoch in range(1, num_outer_epochs + 1):
             # Find full target gradient
             target_model.zero_grad()
             for batch in train_loader:
@@ -52,7 +55,8 @@ class SVRGTrainer:
                 # In order to average over all examples, we need to scale it.
                 loss *= len(data) / len(train_loader.dataset)
                 loss.backward()
-            mu = torch.cat([ x.grad.view(-1) for x in target_model.parameters() ]).detach()
+            mu = torch.cat([x.grad.view(-1)
+                            for x in target_model.parameters()]).detach()
             target_model.zero_grad()
             grad_epoch += 1
 
@@ -61,7 +65,7 @@ class SVRGTrainer:
 
             optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
             model_state_dicts = []
-            for sub_epoch in range(1, num_inner_epochs+1):
+            for sub_epoch in range(1, num_inner_epochs + 1):
                 train_loss = 0
                 step = 0
                 for batch in train_loader:
@@ -72,15 +76,19 @@ class SVRGTrainer:
                     target_model_out = target_model(data)
                     target_model_loss = self.loss_fn(target_model_out, label)
                     target_model_loss.backward()
-                    target_model_grad = torch.cat([ x.grad.view(-1) for x in target_model.parameters() ]).detach()
+                    target_model_grad = torch.cat(
+                        [x.grad.view(-1) for x in target_model.parameters()]).detach()
 
-                    model_weights = torch.cat([ x.view(-1) for x in model.parameters() ])
+                    model_weights = torch.cat(
+                        [x.view(-1) for x in model.parameters()])
                     model_out = model(data)
                     model_loss = self.loss_fn(model_out, label)
 
                     # Use SGD on auxiliary loss function
                     # See the SVRG paper section 2 for details
-                    aux_loss = model_loss - torch.dot((target_model_grad - mu).detach(), model_weights)
+                    aux_loss = model_loss - \
+                        torch.dot((target_model_grad - mu).detach(),
+                                  model_weights)
                     aux_loss.backward()
                     optimizer.step()
 
@@ -88,8 +96,10 @@ class SVRGTrainer:
                     model_state_dicts.append(copy.deepcopy(model.state_dict()))
                 avg_train_loss = train_loss / len(train_loader.dataset)
                 grad_epoch += 1
-                metrics.append({'grad_epoch': grad_epoch, 'train_loss': avg_train_loss})
-                print('[Outer {}/{}, Inner {}/{}] # grad/n: {}, loss: {:.03f}'.format(epoch, num_outer_epochs, sub_epoch, num_inner_epochs, grad_epoch, avg_train_loss))
+                metrics.append({'grad_epoch': grad_epoch,
+                                'train_loss': avg_train_loss})
+                print('[Outer {}/{}, Inner {}/{}] # grad/n: {}, loss: {:.03f}'.format(epoch,
+                    num_outer_epochs, sub_epoch, num_inner_epochs, grad_epoch, avg_train_loss))  # noqa
             new_target_state_dict = random.choice(model_state_dicts)
             target_model.load_state_dict(new_target_state_dict)
         return metrics
@@ -98,7 +108,7 @@ class SVRGTrainer:
 def create_mlp(layer_sizes):
     layers = [nn.Flatten()]
     for i in range(1, len(layer_sizes)):
-        in_size = layer_sizes[i-1]
+        in_size = layer_sizes[i - 1]
         out_size = layer_sizes[i]
         layers.append(nn.Linear(in_size, out_size))
         layers.append(nn.ReLU())
@@ -113,7 +123,8 @@ def main():
     parser.add_argument('--max_dataset_size', type=int)
     parser.add_argument('--batch_size', type=int, default=1)
     parser.add_argument('--learning_rate', type=float, default=0.01)
-    parser.add_argument('--layer_sizes', type=int, nargs='+', default=[784, 100, 10])
+    parser.add_argument('--layer_sizes', type=int,
+                        nargs='+', default=[784, 100, 10])
     parser.add_argument('--device', default='cpu', choices=['cpu', 'cuda'])
     parser.add_argument('--num_warmup_epochs', type=int, default=10)
     parser.add_argument('--num_outer_epochs', type=int, default=100)
@@ -128,11 +139,14 @@ def main():
         torch.manual_seed(args.seed)
         random.seed(args.seed)
 
-    train_ds = datasets.MNIST(args.dataset_path, transform=transforms.ToTensor())
+    train_ds = datasets.MNIST(
+        args.dataset_path, transform=transforms.ToTensor())
     if args.max_dataset_size is not None and len(train_ds) > args.max_dataset_size:
         print('Limiting dataset size to:', args.max_dataset_size)
-        train_ds = torch.utils.data.dataset.Subset(train_ds, indices=list(range(args.max_dataset_size)))
-    train_loader = torch.utils.data.DataLoader(train_ds, batch_size=args.batch_size, shuffle=True)
+        train_ds = torch.utils.data.dataset.Subset(
+            train_ds, indices=list(range(args.max_dataset_size)))
+    train_loader = torch.utils.data.DataLoader(
+        train_ds, batch_size=args.batch_size, shuffle=True)
 
     loss_fn = nn.CrossEntropyLoss()
     create_model = functools.partial(create_mlp, layer_sizes=args.layer_sizes)
