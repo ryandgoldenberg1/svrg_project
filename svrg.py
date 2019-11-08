@@ -3,6 +3,7 @@ import copy
 import functools
 import json
 import random
+import time
 
 import matplotlib.pyplot as plt
 import torch
@@ -16,7 +17,8 @@ class SVRGTrainer:
         self.create_model = create_model
         self.loss_fn = loss_fn
 
-    def train(self, train_loader, num_warmup_epochs, num_outer_epochs, num_inner_epochs, learning_rate, device):
+    def train(self, train_loader, num_warmup_epochs, num_outer_epochs, num_inner_epochs, learning_rate, device,
+              weight_decay):
         metrics = []
         grad_epoch = 0
 
@@ -26,9 +28,10 @@ class SVRGTrainer:
 
         # Perform several epochs of SGD as initialization for SVRG
         warmup_optimizer = torch.optim.SGD(
-            target_model.parameters(), lr=learning_rate)
+            target_model.parameters(), lr=learning_rate, weight_decay=weight_decay)
         for warmup_epoch in range(1, num_warmup_epochs + 1):
             warmup_loss = 0
+            epoch_start = time.time()
             for batch in train_loader:
                 data, label = (x.to(device) for x in batch)
                 warmup_optimizer.zero_grad()
@@ -39,10 +42,12 @@ class SVRGTrainer:
                 warmup_loss += loss.item() * len(data)
             avg_warmup_loss = warmup_loss / len(train_loader.dataset)
             grad_epoch += 1
+            elapsed_time = time.time() - epoch_start
+            ex_per_sec = len(train_loader.dataset) / elapsed_time
             metrics.append({'grad_epoch': grad_epoch,
                             'train_loss': avg_warmup_loss})
-            print('[Warmup {}/{}] # grad/n: {}, loss: {:.02f}'.format(
-                warmup_epoch, num_warmup_epochs, grad_epoch, avg_warmup_loss))
+            print('[Warmup {}/{}] # grad/n: {}, loss: {:.02f}, (1k) ex/s: {:.02f}'.format(
+                warmup_epoch, num_warmup_epochs, grad_epoch, avg_warmup_loss, ex_per_sec / 1000))
 
         for epoch in range(1, num_outer_epochs + 1):
             # Find full target gradient
@@ -63,11 +68,11 @@ class SVRGTrainer:
             # Initialize model to target model
             model.load_state_dict(copy.deepcopy(target_model.state_dict()))
 
-            optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
+            optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
             model_state_dicts = []
             for sub_epoch in range(1, num_inner_epochs + 1):
                 train_loss = 0
-                step = 0
+                epoch_start = time.time()
                 for batch in train_loader:
                     data, label = (x.to(device) for x in batch)
                     optimizer.zero_grad()
@@ -93,13 +98,19 @@ class SVRGTrainer:
                     optimizer.step()
 
                     train_loss += model_loss.item() * len(data)
-                    model_state_dicts.append(copy.deepcopy(model.state_dict()))
+                    copy_state_dict = copy.deepcopy(model.state_dict())
+                    # Copy model parameters to CPU first to prevent GPU overflow
+                    for k, v in copy_state_dict.items():
+                        copy_state_dict[k] = v.cpu()
+                    model_state_dicts.append(copy_state_dict)
                 avg_train_loss = train_loss / len(train_loader.dataset)
                 grad_epoch += 1
+                elapsed_time = time.time() - epoch_start
+                ex_per_sec = len(train_loader.dataset) / elapsed_time
                 metrics.append({'grad_epoch': grad_epoch,
                                 'train_loss': avg_train_loss})
-                print('[Outer {}/{}, Inner {}/{}] # grad/n: {}, loss: {:.03f}'.format(epoch,
-                    num_outer_epochs, sub_epoch, num_inner_epochs, grad_epoch, avg_train_loss))  # noqa
+                print('[Outer {}/{}, Inner {}/{}] # grad/n: {}, loss: {:.03f}, (1k) ex/s: {:.02f}'.format(epoch,
+                    num_outer_epochs, sub_epoch, num_inner_epochs, grad_epoch, avg_train_loss, ex_per_sec / 1000))  # noqa
             new_target_state_dict = random.choice(model_state_dicts)
             target_model.load_state_dict(new_target_state_dict)
         return metrics
@@ -122,7 +133,8 @@ def main():
     parser.add_argument('--dataset_path', default='~/datasets/pytorch')
     parser.add_argument('--max_dataset_size', type=int)
     parser.add_argument('--batch_size', type=int, default=1)
-    parser.add_argument('--learning_rate', type=float, default=0.01)
+    parser.add_argument('--learning_rate', type=float, default=0.025)
+    parser.add_argument('--weight_decay', type=float, default=0.0001)
     parser.add_argument('--layer_sizes', type=int,
                         nargs='+', default=[784, 100, 10])
     parser.add_argument('--device', default='cpu', choices=['cpu', 'cuda'])
@@ -157,6 +169,7 @@ def main():
         num_outer_epochs=args.num_outer_epochs,
         num_inner_epochs=args.num_inner_epochs,
         learning_rate=args.learning_rate,
+        weight_decay=args.weight_decay,
         device=torch.device(args.device))
 
     if args.metrics_path is not None:
