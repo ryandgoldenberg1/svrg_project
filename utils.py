@@ -16,4 +16,4 @@ def calculate_full_gradient(model, data_loader, loss_fn, device):
 
 def calculate_full_gradient_norm(model, data_loader, loss_fn, device):
     grad = calculate_full_gradient(model=model, data_loader=data_loader, loss_fn=loss_fn, device=device)
-    return torch.norm(grad, 2)
+    return torch.norm(grad, 2).item()

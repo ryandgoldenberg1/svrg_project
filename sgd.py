@@ -60,6 +60,8 @@ if __name__ == '__main__':
     parser.add_argument('--weight_decay', type=float, default=0.0001)
     parser.add_argument('--layer_sizes', type=int, nargs='+', default=[784, 10])
     parser.add_argument('--device', default='cpu', choices=['cpu', 'cuda'])
+    parser.add_argument('--metrics_path')
+    parser.add_argument('--plot', default=False, action='store_true')
     args = parser.parse_args()
     print(json.dumps(args.__dict__, indent=2))
 
@@ -76,6 +78,13 @@ if __name__ == '__main__':
     optimizer = torch.optim.SGD(model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay)
     trainer = SDGTrainer(model=model, loss_fn=loss_fn, optimizer=optimizer)
     metrics = trainer.train(train_loader, num_epochs=args.num_epochs, device=torch.device(args.device))
-    losses = [x['train_loss'] for x in metrics]
-    plt.plot(losses)
-    plt.show()
+
+    if args.metrics_path is not None:
+        with open(args.metrics_path, 'w') as f:
+            json.dump(metrics, f)
+        print('Wrote metrics to:', args.metrics_path)
+
+    if args.plot:
+        losses = [x['train_loss'] for x in metrics]
+        plt.plot(losses)
+        plt.show()
