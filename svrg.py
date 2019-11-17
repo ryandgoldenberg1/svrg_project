@@ -5,6 +5,8 @@ import json
 import random
 import time
 
+import utils
+
 import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
@@ -49,18 +51,12 @@ class SVRGTrainer:
 
         for epoch in range(1, num_outer_epochs + 1):
             # Find full target gradient
-            target_model.zero_grad()
-            for batch in train_loader:
-                data, label = (x.to(device) for x in batch)
-                prediction = target_model(data)
-                loss = self.loss_fn(prediction, label)
-                # The loss function averages over the batch, len(data).
-                # In order to average over all examples, we need to scale it.
-                loss *= len(data) / len(train_loader.dataset)
-                loss.backward()
-            mu = torch.cat([x.grad.view(-1)
-                            for x in target_model.parameters()]).detach()
-            target_model.zero_grad()
+            mu = utils.calculate_full_gradient(
+                model=target_model,
+                data_loader=train_loader,
+                loss_fn=self.loss_fn,
+                device=device
+            )
 
             # Initialize model to target model
             model.load_state_dict(copy.deepcopy(target_model.state_dict()))
