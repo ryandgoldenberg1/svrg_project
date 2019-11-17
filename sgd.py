@@ -9,14 +9,17 @@ from torchvision import datasets, transforms
 import matplotlib.pyplot as plt
 
 
+import utils
+
+
 class SDGTrainer:
     def __init__(self, model, loss_fn, optimizer):
         self.model = model
         self.loss_fn = loss_fn
         self.optimizer = optimizer
 
-    def train(self, train_loader, num_epochs):
-        epoch_avg_losses = []
+    def train(self, train_loader, num_epochs, device):
+        metrics = []
         for epoch in range(1, num_epochs+1):
             train_loss = 0
             for batch in train_loader:
@@ -30,9 +33,11 @@ class SDGTrainer:
                 # Update Statistics
                 train_loss += loss.item() * data.shape[0]
             avg_train_loss = train_loss / len(train_loader.dataset)
-            epoch_avg_losses.append(avg_train_loss)
-            print('[Epoch {}] train_loss: {:.04f}'.format(epoch, avg_train_loss))
-        return epoch_avg_losses
+            model_grad_norm = utils.calculate_full_gradient_norm(
+                model=self.model, data_loader=train_loader, loss_fn=self.loss_fn, device=device)
+            metrics.append({'epoch': epoch, 'train_loss': avg_train_loss, 'grad_norm': model_grad_norm})
+            print('[Epoch {}] train_loss: {:.04f}, grad_norm: {:.02f}'.format(epoch, avg_train_loss, model_grad_norm))
+        return metrics
 
 
 def create_mlp(layer_sizes):
@@ -54,6 +59,7 @@ if __name__ == '__main__':
     parser.add_argument('--learning_rate', type=float, default=0.001)
     parser.add_argument('--weight_decay', type=float, default=0.0001)
     parser.add_argument('--layer_sizes', type=int, nargs='+', default=[784, 10])
+    parser.add_argument('--device', default='cpu', choices=['cpu', 'cuda'])
     args = parser.parse_args()
     print(json.dumps(args.__dict__, indent=2))
 
@@ -69,6 +75,7 @@ if __name__ == '__main__':
     loss_fn = nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay)
     trainer = SDGTrainer(model=model, loss_fn=loss_fn, optimizer=optimizer)
-    losses = trainer.train(train_loader, num_epochs=args.num_epochs)
+    metrics = trainer.train(train_loader, num_epochs=args.num_epochs, device=torch.device(args.device))
+    losses = [x['train_loss'] for x in metrics]
     plt.plot(losses)
     plt.show()

@@ -42,12 +42,15 @@ class SVRGTrainer:
                 warmup_optimizer.step()
                 warmup_loss += loss.item() * len(data)
             avg_warmup_loss = warmup_loss / len(train_loader.dataset)
+            model_grad_norm = utils.calculate_full_gradient_norm(
+                model=target_model, data_loader=train_loader, loss_fn=self.loss_fn, device=device)
             elapsed_time = time.time() - epoch_start
             ex_per_sec = len(train_loader.dataset) / elapsed_time
             metrics.append({'warmup_epoch': warmup_epoch,
-                            'train_loss': avg_warmup_loss})
-            print('[Warmup {}/{}] loss: {:.02f}, (1k) ex/s: {:.02f}'.format(
-                warmup_epoch, num_warmup_epochs, avg_warmup_loss, ex_per_sec / 1000))
+                            'train_loss': avg_warmup_loss,
+                            'grad_norm': model_grad_norm})
+            print('[Warmup {}/{}] loss: {:.04f}, grad_norm: {:.02f} (1k) ex/s: {:.02f}'.format(
+                warmup_epoch, num_warmup_epochs, avg_warmup_loss, model_grad_norm, ex_per_sec / 1000))
 
         for epoch in range(1, num_outer_epochs + 1):
             # Find full target gradient
@@ -97,13 +100,17 @@ class SVRGTrainer:
                         copy_state_dict[k] = v.cpu()
                     model_state_dicts.append(copy_state_dict)
                 avg_train_loss = train_loss / len(train_loader.dataset)
+                model_grad_norm = utils.calculate_full_gradient_norm(
+                    model=model, data_loader=train_loader, loss_fn=self.loss_fn, device=device)
                 elapsed_time = time.time() - epoch_start
                 ex_per_sec = len(train_loader.dataset) / elapsed_time
                 metrics.append({'outer_epoch': epoch,
                                 'inner_epoch': sub_epoch,
-                                'train_loss': avg_train_loss})
-                print('[Outer {}/{}, Inner {}/{}] loss: {:.03f}, (1k) ex/s: {:.02f}'.format(epoch,
-                    num_outer_epochs, sub_epoch, num_inner_epochs, avg_train_loss, ex_per_sec / 1000))  # noqa
+                                'train_loss': avg_train_loss,
+                                'grad_norm': model_grad_norm})
+                print('[Outer {}/{}, Inner {}/{}] loss: {:.04f}, grad_norm: {:.02f}, (1k) ex/s: {:.02f}'.format(epoch,
+                    num_outer_epochs, sub_epoch, num_inner_epochs, avg_train_loss, model_grad_norm,
+                    ex_per_sec / 1000))  # noqa
 
             if choose_random_iterate:
                 new_target_state_dict = random.choice(model_state_dicts)
