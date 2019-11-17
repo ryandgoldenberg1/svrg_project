@@ -1,4 +1,6 @@
+import argparse
 import copy
+import json
 import random
 import torch
 import torch.nn as nn
@@ -45,26 +47,28 @@ def create_mlp(layer_sizes):
 
 
 if __name__ == '__main__':
-    dataset_size = None
-    # dataset_size = 600
-    batch_size = 1
-    num_epochs = 100
-    # num_epochs = 10
-    learning_rate = 0.001
-    weight_decay = 0.0001
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--dataset_size', type=int)
+    parser.add_argument('--batch_size', type=int, default=1)
+    parser.add_argument('--num_epochs', type=int, default=10)
+    parser.add_argument('--learning_rate', type=float, default=0.001)
+    parser.add_argument('--weight_decay', type=float, default=0.0001)
+    parser.add_argument('--layer_sizes', type=int, nargs='+', default=[784, 10])
+    args = parser.parse_args()
+    print(json.dumps(args.__dict__, indent=2))
 
     train_ds = datasets.MNIST('~/datasets/pytorch', transform=transforms.ToTensor(), download=True)
-    if dataset_size is not None:
-        train_ds = torch.utils.data.dataset.Subset(train_ds, indices=list(range(dataset_size)))
-    train_loader = torch.utils.data.DataLoader(train_ds, batch_size=batch_size, shuffle=True)
+    if args.dataset_size is not None:
+        train_ds = torch.utils.data.dataset.Subset(train_ds, indices=list(range(args.dataset_size)))
+    train_loader = torch.utils.data.DataLoader(train_ds, batch_size=args.batch_size, shuffle=True)
     print('dataset_size:', len(train_loader.dataset))
 
-    model = create_mlp(layer_sizes=[784, 10])
+    model = create_mlp(layer_sizes=args.layer_sizes)
     print(model)
 
     loss_fn = nn.CrossEntropyLoss()
-    optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
+    optimizer = torch.optim.SGD(model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay)
     trainer = SDGTrainer(model=model, loss_fn=loss_fn, optimizer=optimizer)
-    losses = trainer.train(train_loader, num_epochs=num_epochs)
+    losses = trainer.train(train_loader, num_epochs=args.num_epochs)
     plt.plot(losses)
     plt.show()
