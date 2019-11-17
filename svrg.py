@@ -3,15 +3,16 @@ import copy
 import functools
 import json
 import random
+import sys
 import time
-
-import utils
 
 import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
 import torchvision
 from torchvision import datasets, transforms
+
+import utils
 
 
 class SVRGTrainer:
@@ -147,7 +148,7 @@ def main():
     parser.add_argument('--num_outer_epochs', type=int, default=100)
     parser.add_argument('--num_inner_epochs', type=int, default=5)
     parser.add_argument('--choose_random_iterate', default=False, action='store_true')
-    parser.add_argument('--metrics_path')
+    parser.add_argument('--output_path')
     parser.add_argument('--plot', default=False, action='store_true')
     args = parser.parse_args()
     print(json.dumps(args.__dict__, indent=2))
@@ -180,10 +181,16 @@ def main():
         device=torch.device(args.device),
         choose_random_iterate=args.choose_random_iterate)
 
-    if args.metrics_path is not None:
-        with open(args.metrics_path, 'w') as f:
-            json.dump(metrics, f)
-        print('Wrote metrics to:', args.metrics_path)
+    if args.output_path is not None:
+        output = {
+            'script': __file__,
+            'argv': sys.argv,
+            'args': args.__dict__,
+            'metrics': metrics
+        }
+        with open(args.output_path, 'w') as f:
+            json.dump(output, f)
+        print('Wrote output to:', args.output_path)
 
     if args.plot:
         x = []
