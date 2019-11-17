@@ -18,7 +18,7 @@ class SVRGTrainer:
         self.loss_fn = loss_fn
 
     def train(self, train_loader, num_warmup_epochs, num_outer_epochs, num_inner_epochs, warmup_learning_rate,
-              learning_rate, device, weight_decay):
+              learning_rate, device, weight_decay, choose_random_iterate):
         metrics = []
 
         model = self.create_model().to(device)
@@ -108,7 +108,11 @@ class SVRGTrainer:
                                 'train_loss': avg_train_loss})
                 print('[Outer {}/{}, Inner {}/{}] loss: {:.03f}, (1k) ex/s: {:.02f}'.format(epoch,
                     num_outer_epochs, sub_epoch, num_inner_epochs, avg_train_loss, ex_per_sec / 1000))  # noqa
-            new_target_state_dict = random.choice(model_state_dicts)
+
+            if choose_random_iterate:
+                new_target_state_dict = random.choice(model_state_dicts)
+            else:
+                new_target_state_dict = model_state_dicts[-1]
             target_model.load_state_dict(new_target_state_dict)
         return metrics
 
@@ -139,6 +143,7 @@ def main():
     parser.add_argument('--num_warmup_epochs', type=int, default=10)
     parser.add_argument('--num_outer_epochs', type=int, default=100)
     parser.add_argument('--num_inner_epochs', type=int, default=5)
+    parser.add_argument('--choose_random_iterate', default=False, action='store_true')
     parser.add_argument('--metrics_path')
     parser.add_argument('--plot', default=False, action='store_true')
     args = parser.parse_args()
@@ -169,7 +174,8 @@ def main():
         warmup_learning_rate=args.warmup_learning_rate,
         learning_rate=args.learning_rate,
         weight_decay=args.weight_decay,
-        device=torch.device(args.device))
+        device=torch.device(args.device),
+        choose_random_iterate=args.choose_random_iterate)
 
     if args.metrics_path is not None:
         with open(args.metrics_path, 'w') as f:
