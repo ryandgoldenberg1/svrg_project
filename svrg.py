@@ -20,7 +20,6 @@ class SVRGTrainer:
     def train(self, train_loader, num_warmup_epochs, num_outer_epochs, num_inner_epochs, learning_rate, device,
               weight_decay):
         metrics = []
-        grad_epoch = 0
 
         model = self.create_model().to(device)
         target_model = self.create_model().to(device)
@@ -41,13 +40,12 @@ class SVRGTrainer:
                 warmup_optimizer.step()
                 warmup_loss += loss.item() * len(data)
             avg_warmup_loss = warmup_loss / len(train_loader.dataset)
-            grad_epoch += 1
             elapsed_time = time.time() - epoch_start
             ex_per_sec = len(train_loader.dataset) / elapsed_time
-            metrics.append({'grad_epoch': grad_epoch,
+            metrics.append({'warmup_epoch': warmup_epoch,
                             'train_loss': avg_warmup_loss})
-            print('[Warmup {}/{}] # grad/n: {}, loss: {:.02f}, (1k) ex/s: {:.02f}'.format(
-                warmup_epoch, num_warmup_epochs, grad_epoch, avg_warmup_loss, ex_per_sec / 1000))
+            print('[Warmup {}/{}] loss: {:.02f}, (1k) ex/s: {:.02f}'.format(
+                warmup_epoch, num_warmup_epochs, avg_warmup_loss, ex_per_sec / 1000))
 
         for epoch in range(1, num_outer_epochs + 1):
             # Find full target gradient
@@ -63,7 +61,6 @@ class SVRGTrainer:
             mu = torch.cat([x.grad.view(-1)
                             for x in target_model.parameters()]).detach()
             target_model.zero_grad()
-            grad_epoch += 1
 
             # Initialize model to target model
             model.load_state_dict(copy.deepcopy(target_model.state_dict()))
@@ -104,13 +101,13 @@ class SVRGTrainer:
                         copy_state_dict[k] = v.cpu()
                     model_state_dicts.append(copy_state_dict)
                 avg_train_loss = train_loss / len(train_loader.dataset)
-                grad_epoch += 1
                 elapsed_time = time.time() - epoch_start
                 ex_per_sec = len(train_loader.dataset) / elapsed_time
-                metrics.append({'grad_epoch': grad_epoch,
+                metrics.append({'outer_epoch': epoch,
+                                'inner_epoch': sub_epoch,
                                 'train_loss': avg_train_loss})
-                print('[Outer {}/{}, Inner {}/{}] # grad/n: {}, loss: {:.03f}, (1k) ex/s: {:.02f}'.format(epoch,
-                    num_outer_epochs, sub_epoch, num_inner_epochs, grad_epoch, avg_train_loss, ex_per_sec / 1000))  # noqa
+                print('[Outer {}/{}, Inner {}/{}] loss: {:.03f}, (1k) ex/s: {:.02f}'.format(epoch,
+                    num_outer_epochs, sub_epoch, num_inner_epochs, avg_train_loss, ex_per_sec / 1000))  # noqa
             new_target_state_dict = random.choice(model_state_dicts)
             target_model.load_state_dict(new_target_state_dict)
         return metrics
@@ -178,7 +175,15 @@ def main():
         print('Wrote metrics to:', args.metrics_path)
 
     if args.plot:
-        x = [el['grad_epoch'] for el in metrics]
+        x = []
+        y = []
+        for el in metrics:
+            warmup_epoch = el.get('warmup_epoch') or args.num_warmup_epochs
+            outer_epoch = el.get('outer_epoch') or 0
+            inner_epoch = el.get('inner_epoch') or 0
+            grad_epoch = warmup_epoch + outer_epoch * (1 + inner_epoch)
+            x.append(grad_epoch)
+            y.append(el['train_loss'])
         y = [el['train_loss'] for el in metrics]
         plt.plot(x, y)
         plt.show()
