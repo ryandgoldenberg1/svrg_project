@@ -17,8 +17,8 @@ class SVRGTrainer:
         self.create_model = create_model
         self.loss_fn = loss_fn
 
-    def train(self, train_loader, num_warmup_epochs, num_outer_epochs, num_inner_epochs, learning_rate, device,
-              weight_decay):
+    def train(self, train_loader, num_warmup_epochs, num_outer_epochs, num_inner_epochs, warmup_learning_rate,
+              learning_rate, device, weight_decay):
         metrics = []
 
         model = self.create_model().to(device)
@@ -27,7 +27,7 @@ class SVRGTrainer:
 
         # Perform several epochs of SGD as initialization for SVRG
         warmup_optimizer = torch.optim.SGD(
-            target_model.parameters(), lr=learning_rate, weight_decay=weight_decay)
+            target_model.parameters(), lr=warmup_learning_rate, weight_decay=weight_decay)
         for warmup_epoch in range(1, num_warmup_epochs + 1):
             warmup_loss = 0
             epoch_start = time.time()
@@ -130,6 +130,7 @@ def main():
     parser.add_argument('--dataset_path', default='~/datasets/pytorch')
     parser.add_argument('--max_dataset_size', type=int)
     parser.add_argument('--batch_size', type=int, default=1)
+    parser.add_argument('--warmup_learning_rate', type=float, default=0.01)
     parser.add_argument('--learning_rate', type=float, default=0.025)
     parser.add_argument('--weight_decay', type=float, default=0.0001)
     parser.add_argument('--layer_sizes', type=int,
@@ -165,6 +166,7 @@ def main():
         num_warmup_epochs=args.num_warmup_epochs,
         num_outer_epochs=args.num_outer_epochs,
         num_inner_epochs=args.num_inner_epochs,
+        warmup_learning_rate=args.warmup_learning_rate,
         learning_rate=args.learning_rate,
         weight_decay=args.weight_decay,
         device=torch.device(args.device))
