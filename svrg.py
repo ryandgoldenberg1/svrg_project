@@ -20,8 +20,8 @@ class SVRGTrainer:
         self.create_model = create_model
         self.loss_fn = loss_fn
 
-    def train(self, train_loader, num_warmup_epochs, num_outer_epochs, num_inner_epochs, warmup_learning_rate,
-              learning_rate, device, weight_decay, choose_random_iterate):
+    def train(self, train_loader, num_warmup_epochs, num_outer_epochs, num_inner_epochs, inner_epoch_fraction,
+              warmup_learning_rate, learning_rate, device, weight_decay, choose_random_iterate):
         metrics = []
 
         model = self.create_model().to(device)
@@ -67,10 +67,15 @@ class SVRGTrainer:
 
             optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
             model_state_dicts = []
+            inner_batches = len(train_loader)
+            if inner_epoch_fraction is not None:
+                inner_batches = int(len(train_loader) * inner_epoch_fraction)
             for sub_epoch in range(1, num_inner_epochs + 1):
                 train_loss = 0
+                examples_seen = 0
                 epoch_start = time.time()
-                for batch in train_loader:
+                for batch_idx, batch in enumerate(train_loader):
+
                     data, label = (x.to(device) for x in batch)
                     optimizer.zero_grad()
 
@@ -95,12 +100,17 @@ class SVRGTrainer:
                     optimizer.step()
 
                     train_loss += model_loss.item() * len(data)
+                    examples_seen += len(data)
                     copy_state_dict = copy.deepcopy(model.state_dict())
                     # Copy model parameters to CPU first to prevent GPU overflow
                     for k, v in copy_state_dict.items():
                         copy_state_dict[k] = v.cpu()
                     model_state_dicts.append(copy_state_dict)
-                avg_train_loss = train_loss / len(train_loader.dataset)
+
+                    batch_num = batch_idx + 1
+                    if batch_num >= inner_batches:
+                        break
+                avg_train_loss = train_loss / examples_seen
                 model_grad_norm = utils.calculate_full_gradient_norm(
                     model=model, data_loader=train_loader, loss_fn=self.loss_fn, device=device)
                 elapsed_time = time.time() - epoch_start
@@ -147,6 +157,7 @@ def main():
     parser.add_argument('--num_warmup_epochs', type=int, default=10)
     parser.add_argument('--num_outer_epochs', type=int, default=100)
     parser.add_argument('--num_inner_epochs', type=int, default=5)
+    parser.add_argument('--inner_epoch_fraction', type=float)
     parser.add_argument('--choose_random_iterate', default=False, action='store_true')
     parser.add_argument('--run_name', default='svrg')
     parser.add_argument('--output_path')
@@ -176,6 +187,7 @@ def main():
         num_warmup_epochs=args.num_warmup_epochs,
         num_outer_epochs=args.num_outer_epochs,
         num_inner_epochs=args.num_inner_epochs,
+        inner_epoch_fraction=args.inner_epoch_fraction,
         warmup_learning_rate=args.warmup_learning_rate,
         learning_rate=args.learning_rate,
         weight_decay=args.weight_decay,
