@@ -61,6 +61,7 @@ if __name__ == '__main__':
     parser.add_argument('--weight_decay', type=float, default=0.0001)
     parser.add_argument('--layer_sizes', type=int, nargs='+', default=[784, 10])
     parser.add_argument('--device', default='cpu', choices=['cpu', 'cuda'])
+    parser.add_argument('--run_name', default='sgd')
     parser.add_argument('--output_path')
     parser.add_argument('--plot', default=False, action='store_true')
     args = parser.parse_args()

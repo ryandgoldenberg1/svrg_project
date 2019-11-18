@@ -148,6 +148,7 @@ def main():
     parser.add_argument('--num_outer_epochs', type=int, default=100)
     parser.add_argument('--num_inner_epochs', type=int, default=5)
     parser.add_argument('--choose_random_iterate', default=False, action='store_true')
+    parser.add_argument('--run_name', default='svrg')
     parser.add_argument('--output_path')
     parser.add_argument('--plot', default=False, action='store_true')
     args = parser.parse_args()
