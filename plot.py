@@ -14,7 +14,6 @@ def create_plot(runs, key):
         else:
             raise ValueError('Unrecognized optimizer: {}'.format(run['args']['optimizer']))
     plt.legend()
-    plt.show()
 
 
 def plot_sgd_run(run, key):
@@ -63,6 +62,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--run_paths', nargs='+', required=True)
     parser.add_argument('--key', default='train_loss')
+    parser.add_argument('--save_path')
     args = parser.parse_args()
     print(json.dumps(args.__dict__, indent=2))
 
@@ -73,6 +73,10 @@ def main():
             runs.append(run)
     print('Loaded runs')
     create_plot(runs=runs, key=args.key)
+    if args.save_path is not None:
+        plt.savefig(args.save_path)
+        print('Saved image to:', args.save_path)
+    plt.show()
 
 
 if __name__ == '__main__':

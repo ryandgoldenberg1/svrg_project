@@ -4,13 +4,47 @@ Group project for Columbia course COMS4995-004 Optimization for Machine Learning
 
 ## Scripts
 
-### `svrg.py`
 
-Runs SVRG optimization using MLP against the MNIST dataset. Performs several epochs of SGD during warmup phase before SVRG updates. Optionally outputs metrics of the run, and plots the loss curve.
+* `train.py`: Trains an MLP using SGD or SVRG. See `train.py -h` for options including dataset and hyperparameters.
+* `plot.py`: Plots the results of several runs of `train.py` in a single figure.
 
-Example Usage:
+### Example Usage
 
-`python svrg.py --num_outer_epochs 10 --num_inner_epochs 2 --device cuda --metrics_path "runs/svrg_output.json" --plot`
+```bash
+# SGD Run
+python train.py \
+  --seed 63 \
+  --optimizer SGD \
+  --dataset MNIST \
+  --dataset_size 1000 \
+  --run_name sgd \
+  --output_path sgd.json \
+  --layer_sizes 784 10 \
+  --batch_size 1 \
+  --learning_rate 0.1 \
+  --weight_decay 0.001 \
+  --num_epochs 20
+
+# SVRG Run
+python train.py \
+  --seed 63 \
+  --optimizer SVRG \
+  --dataset MNIST \
+  --dataset_size 1000 \
+  --run_name svrg \
+  --output_path svrg.json \
+  --layer_sizes 784 10 \
+  --batch_size 1 \
+  --learning_rate 0.025 \
+  --weight_decay 0.001 \
+  --warmup_learning_rate 0.1 \
+  --num_warmup_epochs 1 \
+  --num_outer_epochs 7 \
+  --num_inner_epochs 2
+
+# Plot Results
+python plot.py --key train_loss --run_paths sgd.json svrg.json --save_path sgd_svrg.png
+```
 
 ## Group Members
 
@@ -26,6 +60,7 @@ Example Usage:
   - num_outer_epoch 242 (solve from (sn + 2sm / n) = 290 with m = n/10)
   - inner_epoch_fraction 0.1 (from m = n / 10)
   - batch_size 10
+
 **MNIST SGD**
   - learning rate: To be tuned
   - num_epoch 300
@@ -65,7 +100,7 @@ Example Usage:
   - Compare method: SGD/SVRG
   - dataset: MNIST
   - network: 3 layer MLP with hidden unit = 100 and relu as activate function
-  
+
 **Rosenbrock function**
   - Goal: Whether SVRG is better than SGD when the objective function has many saddle points
   - Compare mathod: SGD/SVRG
