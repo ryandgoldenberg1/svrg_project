@@ -15,6 +15,10 @@ from torchvision import datasets, transforms
 from sgd import SGDTrainer
 from svrg import SVRGTrainer
 
+DATASET_TO_FN = {'MNIST': datasets.MNIST, 'CIFAR10': datasets.CIFAR10, 'STL10': datasets.STL10}
+DATASET_TO_TRAIN_KWARGS = {'MNIST': {'train': True}, 'CIFAR10': {'train': True}, 'STL10': {'split': 'train'}}
+DATASET_TO_TEST_KWARGS = {'MNIST': {'train': False}, 'CIFAR10': {'train': False}, 'STL10': {'split': 'test'}}
+
 
 def create_mlp(layer_sizes):
     layers = [nn.Flatten()]
@@ -28,10 +32,12 @@ def create_mlp(layer_sizes):
 
 
 def get_dataset(dataset, root, download):
-    kwargs = {'root': root, 'download': download, 'transform': transforms.ToTensor()}
-    dataset_to_fn = {'MNIST': datasets.MNIST, 'CIFAR10': datasets.CIFAR10, 'STL10': datasets.STL10}
-    assert dataset in dataset_to_fn, 'Unrecognized dataset: {}'.format(dataset)
-    return dataset_to_fn[dataset](**kwargs)
+    assert dataset in DATASET_TO_FN, 'Unrecognized dataset: {}'.format(dataset)
+    dataset_fn = DATASET_TO_FN[dataset]
+    common_kwargs = {'root': root, 'download': download, 'transform': transforms.ToTensor()}
+    train_kwargs = {**common_kwargs, **DATASET_TO_TRAIN_KWARGS[dataset]}
+    test_kwargs = {**common_kwargs, **DATASET_TO_TEST_KWARGS[dataset]}
+    return dataset_fn(**train_kwargs), dataset_fn(**test_kwargs)
 
 
 def create_trainer(args):
@@ -67,6 +73,7 @@ def main():
     group = parser.add_argument_group('common hyperparameters')
     group.add_argument('--layer_sizes', type=int, nargs='+', default=[784, 10])
     group.add_argument('--batch_size', type=int, default=1)
+    group.add_argument('--test_batch_size', type=int, default=256)
     group.add_argument('--learning_rate', type=float, default=0.025)
     group.add_argument('--weight_decay', type=float, default=0.0001)
     # SVRG Specific Arguments
@@ -88,17 +95,20 @@ def main():
         torch.manual_seed(args.seed)
         random.seed(args.seed)
 
-    train_ds = get_dataset(dataset=args.dataset, root=args.dataset_root, download=args.download)
+    train_ds, test_ds = get_dataset(dataset=args.dataset, root=args.dataset_root, download=args.download)
     print(train_ds)
+    print(test_ds)
     if args.dataset_size is not None and len(train_ds) > args.dataset_size:
         print('Limiting dataset size to:', args.dataset_size)
         train_ds = torch.utils.data.dataset.Subset(train_ds, indices=list(range(args.dataset_size)))
+        test_ds = torch.utils.data.dataset.Subset(test_ds, indices=list(range(args.dataset_size)))
     train_loader = torch.utils.data.DataLoader(train_ds, batch_size=args.batch_size, shuffle=True)
+    test_loader = torch.utils.data.DataLoader(test_ds, batch_size=args.test_batch_size, shuffle=False)
 
     trainer = create_trainer(args)
     print(trainer)
 
-    metrics = trainer.train(train_loader=train_loader, **args.__dict__)
+    metrics = trainer.train(train_loader=train_loader, test_loader=test_loader, **args.__dict__)
     output = {'argv': sys.argv, 'args': args.__dict__, 'metrics': metrics}
     if args.output_path is not None:
         with open(args.output_path, 'w') as f:

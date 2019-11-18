@@ -13,8 +13,9 @@ class SVRGTrainer:
         self.create_model = create_model
         self.loss_fn = loss_fn
 
-    def train(self, *, train_loader, num_warmup_epochs, num_outer_epochs, num_inner_epochs, inner_epoch_fraction,
-              warmup_learning_rate, learning_rate, device, weight_decay, choose_random_iterate, **kwargs):
+    def train(self, *, train_loader, test_loader, num_warmup_epochs, num_outer_epochs, num_inner_epochs,
+              inner_epoch_fraction, warmup_learning_rate, learning_rate, device, weight_decay, choose_random_iterate,
+              **kwargs):
         print('SVRGTrainer Hyperparameters:', json.dumps({
             'num_warmup_epochs': num_warmup_epochs,
             'num_outer_epochs': num_outer_epochs,
@@ -52,13 +53,15 @@ class SVRGTrainer:
             avg_warmup_loss = warmup_loss / len(train_loader.dataset)
             model_grad_norm = utils.calculate_full_gradient_norm(
                 model=target_model, data_loader=train_loader, loss_fn=self.loss_fn, device=device)
+            test_error = utils.calculate_error(model=target_model, data_loader=test_loader, device=device)
             elapsed_time = time.time() - epoch_start
             ex_per_sec = len(train_loader.dataset) / elapsed_time
             metrics.append({'warmup_epoch': warmup_epoch,
                             'train_loss': avg_warmup_loss,
-                            'grad_norm': model_grad_norm})
-            print('[Warmup {}/{}] loss: {:.04f}, grad_norm: {:.02f} (1k) ex/s: {:.02f}'.format(
-                warmup_epoch, num_warmup_epochs, avg_warmup_loss, model_grad_norm, ex_per_sec / 1000))
+                            'grad_norm': model_grad_norm,
+                            'test_error': test_error})
+            print('[Warmup {}/{}] loss: {:.04f}, grad_norm: {:.02f}, test_error: {:.04f}, (1k) ex/s: {:.02f}'.format(
+                warmup_epoch, num_warmup_epochs, avg_warmup_loss, model_grad_norm, test_error, ex_per_sec / 1000))
 
         for epoch in range(1, num_outer_epochs + 1):
             # Find full target gradient
@@ -120,14 +123,16 @@ class SVRGTrainer:
                 avg_train_loss = train_loss / examples_seen
                 model_grad_norm = utils.calculate_full_gradient_norm(
                     model=model, data_loader=train_loader, loss_fn=self.loss_fn, device=device)
+                test_error = utils.calculate_error(model=model, data_loader=test_loader, device=device)
                 elapsed_time = time.time() - epoch_start
                 ex_per_sec = len(train_loader.dataset) / elapsed_time
                 metrics.append({'outer_epoch': epoch,
                                 'inner_epoch': sub_epoch,
                                 'train_loss': avg_train_loss,
-                                'grad_norm': model_grad_norm})
-                print('[Outer {}/{}, Inner {}/{}] loss: {:.04f}, grad_norm: {:.02f}, (1k) ex/s: {:.02f}'.format(epoch,
-                    num_outer_epochs, sub_epoch, num_inner_epochs, avg_train_loss, model_grad_norm,
+                                'grad_norm': model_grad_norm,
+                                'test_error': test_error})
+                print('[Outer {}/{}, Inner {}/{}] loss: {:.04f}, grad_norm: {:.02f}, test_error: {:.04f}, (1k) ex/s: {:.02f}'.format(
+                    epoch, num_outer_epochs, sub_epoch, num_inner_epochs, avg_train_loss, model_grad_norm, test_error,
                     ex_per_sec / 1000))  # noqa
 
             if choose_random_iterate:

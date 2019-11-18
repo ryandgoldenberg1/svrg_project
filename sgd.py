@@ -11,7 +11,7 @@ class SGDTrainer:
         self.loss_fn = loss_fn
         self.optimizer = optimizer
 
-    def train(self, *, train_loader, num_epochs, device, **kwargs):
+    def train(self, *, train_loader, test_loader, num_epochs, device, **kwargs):
         print('SGDTrainer Hyperparameters:', json.dumps({'num_epochs': num_epochs, 'device': device}, indent=2))
         print('Unused kwargs:', kwargs)
 
@@ -32,6 +32,13 @@ class SGDTrainer:
             avg_train_loss = train_loss / len(train_loader.dataset)
             model_grad_norm = utils.calculate_full_gradient_norm(
                 model=self.model, data_loader=train_loader, loss_fn=self.loss_fn, device=device)
-            metrics.append({'epoch': epoch, 'train_loss': avg_train_loss, 'grad_norm': model_grad_norm})
-            print('[Epoch {}] train_loss: {:.04f}, grad_norm: {:.02f}'.format(epoch, avg_train_loss, model_grad_norm))
+            test_error = utils.calculate_error(model=self.model, data_loader=test_loader, device=device)
+            metrics.append({
+                'epoch': epoch,
+                'train_loss': avg_train_loss,
+                'grad_norm': model_grad_norm,
+                'test_error': test_error
+            })
+            print('[Epoch {}] train_loss: {:.04f}, grad_norm: {:.02f}, test_error: {:.04f}'.format(
+                epoch, avg_train_loss, model_grad_norm, test_error))
         return metrics
