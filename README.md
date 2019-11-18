@@ -56,7 +56,7 @@ python plot.py --key train_loss --run_paths sgd.json svrg.json --save_path sgd_s
 ### Reproducible work
 **MNIST SVRG**
   - learning rate: To be tuned
-  - num_warmup_epoch 10
+  - num_warmup_epoch 1
   - num_outer_epoch 242 (solve from (sn + 2sm / n) = 290 with m = n/10)
   - inner_epoch_fraction 0.1 (from m = n / 10)
   - batch_size 10
@@ -69,7 +69,7 @@ python plot.py --key train_loss --run_paths sgd.json svrg.json --save_path sgd_s
 
 **CIFAR SVRG**
   - learning rate: To be tuned
-  - num_warmup_epoch: 10
+  - num_warmup_epoch: 1
   - num_outer_epoch: 408 (solve from (sn + 2sm / n) = 490 with m = n/10, we assume the rightmost value of x-axis is 500)
   - inner_epoch_fraction 0.1
   - batch_size: 10
@@ -82,7 +82,7 @@ python plot.py --key train_loss --run_paths sgd.json svrg.json --save_path sgd_s
 
 **STL SVRG**
   - learning rate: To be tuned
-  - num_warmup_epoch: 20
+  - num_warmup_epoch: 2
   - num_outer_epoch 242 (solve from (sn + 2sm / n) = 290 with m = n/10)
   - inner_epoch_fraction 0.1 (from m = n / 10)
   - batch_size 10
