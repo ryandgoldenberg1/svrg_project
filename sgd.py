@@ -1,25 +1,21 @@
-import argparse
-import copy
 import json
-import random
-import sys
 
-import matplotlib.pyplot as plt
 import torch
-import torch.nn as nn
-import torchvision
-from torchvision import datasets, transforms
 
 import utils
 
 
-class SDGTrainer:
+class SGDTrainer:
     def __init__(self, model, loss_fn, optimizer):
         self.model = model
         self.loss_fn = loss_fn
         self.optimizer = optimizer
 
-    def train(self, train_loader, num_epochs, device):
+    def train(self, *, train_loader, num_epochs, device, **kwargs):
+        print('SGDTrainer Hyperparameters:', json.dumps({'num_epochs': num_epochs, 'device': device}, indent=2))
+        print('Unused kwargs:', kwargs)
+
+        device = torch.device(device)
         metrics = []
         for epoch in range(1, num_epochs + 1):
             train_loss = 0
@@ -39,61 +35,3 @@ class SDGTrainer:
             metrics.append({'epoch': epoch, 'train_loss': avg_train_loss, 'grad_norm': model_grad_norm})
             print('[Epoch {}] train_loss: {:.04f}, grad_norm: {:.02f}'.format(epoch, avg_train_loss, model_grad_norm))
         return metrics
-
-
-def create_mlp(layer_sizes):
-    layers = [nn.Flatten()]
-    for i in range(1, len(layer_sizes)):
-        in_size = layer_sizes[i - 1]
-        out_size = layer_sizes[i]
-        layers.append(nn.Linear(in_size, out_size))
-        layers.append(nn.ReLU())
-    layers.pop()
-    return nn.Sequential(*layers)
-
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--dataset_size', type=int)
-    parser.add_argument('--batch_size', type=int, default=1)
-    parser.add_argument('--num_epochs', type=int, default=10)
-    parser.add_argument('--learning_rate', type=float, default=0.001)
-    parser.add_argument('--weight_decay', type=float, default=0.0001)
-    parser.add_argument('--layer_sizes', type=int, nargs='+', default=[784, 10])
-    parser.add_argument('--device', default='cpu', choices=['cpu', 'cuda'])
-    parser.add_argument('--run_name', default='sgd')
-    parser.add_argument('--output_path')
-    parser.add_argument('--plot', default=False, action='store_true')
-    args = parser.parse_args()
-    print(json.dumps(args.__dict__, indent=2))
-
-    train_ds = datasets.MNIST('~/datasets/pytorch', transform=transforms.ToTensor(), download=True)
-    if args.dataset_size is not None:
-        train_ds = torch.utils.data.dataset.Subset(train_ds, indices=list(range(args.dataset_size)))
-    train_loader = torch.utils.data.DataLoader(train_ds, batch_size=args.batch_size, shuffle=True)
-    print('dataset_size:', len(train_loader.dataset))
-
-    device = torch.device(args.device)
-    model = create_mlp(layer_sizes=args.layer_sizes).to(device)
-    print(model)
-
-    loss_fn = nn.CrossEntropyLoss()
-    optimizer = torch.optim.SGD(model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay)
-    trainer = SDGTrainer(model=model, loss_fn=loss_fn, optimizer=optimizer)
-    metrics = trainer.train(train_loader, num_epochs=args.num_epochs, device=device)
-
-    if args.output_path is not None:
-        output = {
-            'script': __file__,
-            'argv': sys.argv,
-            'args': args.__dict__,
-            'metrics': metrics
-        }
-        with open(args.output_path, 'w') as f:
-            json.dump(output, f)
-        print('Wrote output to:', args.output_path)
-
-    if args.plot:
-        losses = [x['train_loss'] for x in metrics]
-        plt.plot(losses)
-        plt.show()

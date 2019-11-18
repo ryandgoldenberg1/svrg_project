@@ -1,19 +1,11 @@
-import argparse
 import copy
-import functools
 import json
 import random
-import sys
 import time
 
-import matplotlib.pyplot as plt
 import torch
-import torch.nn as nn
-import torchvision
-from torchvision import datasets, transforms
 
 import utils
-from plot import plot_svrg_run
 
 
 class SVRGTrainer:
@@ -21,8 +13,22 @@ class SVRGTrainer:
         self.create_model = create_model
         self.loss_fn = loss_fn
 
-    def train(self, train_loader, num_warmup_epochs, num_outer_epochs, num_inner_epochs, inner_epoch_fraction,
-              warmup_learning_rate, learning_rate, device, weight_decay, choose_random_iterate):
+    def train(self, *, train_loader, num_warmup_epochs, num_outer_epochs, num_inner_epochs, inner_epoch_fraction,
+              warmup_learning_rate, learning_rate, device, weight_decay, choose_random_iterate, **kwargs):
+        print('SVRGTrainer Hyperparameters:', json.dumps({
+            'num_warmup_epochs': num_warmup_epochs,
+            'num_outer_epochs': num_outer_epochs,
+            'num_inner_epochs': num_inner_epochs,
+            'inner_epoch_fraction': inner_epoch_fraction,
+            'warmup_learning_rate': warmup_learning_rate,
+            'learning_rate': learning_rate,
+            'device': device,
+            'weight_decay': weight_decay,
+            'choose_random_iterate': choose_random_iterate
+        }, indent=2))
+        print('Unused kwargs:', kwargs)
+
+        device = torch.device(device)
         metrics = []
 
         model = self.create_model().to(device)
@@ -130,86 +136,3 @@ class SVRGTrainer:
                 new_target_state_dict = model_state_dicts[-1]
             target_model.load_state_dict(new_target_state_dict)
         return metrics
-
-
-def create_mlp(layer_sizes):
-    layers = [nn.Flatten()]
-    for i in range(1, len(layer_sizes)):
-        in_size = layer_sizes[i - 1]
-        out_size = layer_sizes[i]
-        layers.append(nn.Linear(in_size, out_size))
-        layers.append(nn.ReLU())
-    layers.pop()
-    return nn.Sequential(*layers)
-
-
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--seed', type=int)
-    parser.add_argument('--dataset_path', default='~/datasets/pytorch')
-    parser.add_argument('--max_dataset_size', type=int)
-    parser.add_argument('--batch_size', type=int, default=1)
-    parser.add_argument('--warmup_learning_rate', type=float, default=0.01)
-    parser.add_argument('--learning_rate', type=float, default=0.025)
-    parser.add_argument('--weight_decay', type=float, default=0.0001)
-    parser.add_argument('--layer_sizes', type=int,
-                        nargs='+', default=[784, 100, 10])
-    parser.add_argument('--device', default='cpu', choices=['cpu', 'cuda'])
-    parser.add_argument('--num_warmup_epochs', type=int, default=10)
-    parser.add_argument('--num_outer_epochs', type=int, default=100)
-    parser.add_argument('--num_inner_epochs', type=int, default=5)
-    parser.add_argument('--inner_epoch_fraction', type=float)
-    parser.add_argument('--choose_random_iterate', default=False, action='store_true')
-    parser.add_argument('--run_name', default='svrg')
-    parser.add_argument('--output_path')
-    parser.add_argument('--plot', default=False, action='store_true')
-    args = parser.parse_args()
-    print(json.dumps(args.__dict__, indent=2))
-
-    if args.seed is not None:
-        print('Using seed:', args.seed)
-        torch.manual_seed(args.seed)
-        random.seed(args.seed)
-
-    train_ds = datasets.MNIST(
-        args.dataset_path, transform=transforms.ToTensor())
-    if args.max_dataset_size is not None and len(train_ds) > args.max_dataset_size:
-        print('Limiting dataset size to:', args.max_dataset_size)
-        train_ds = torch.utils.data.dataset.Subset(
-            train_ds, indices=list(range(args.max_dataset_size)))
-    train_loader = torch.utils.data.DataLoader(
-        train_ds, batch_size=args.batch_size, shuffle=True)
-
-    loss_fn = nn.CrossEntropyLoss()
-    create_model = functools.partial(create_mlp, layer_sizes=args.layer_sizes)
-    trainer = SVRGTrainer(create_model=create_model, loss_fn=loss_fn)
-    metrics = trainer.train(
-        train_loader=train_loader,
-        num_warmup_epochs=args.num_warmup_epochs,
-        num_outer_epochs=args.num_outer_epochs,
-        num_inner_epochs=args.num_inner_epochs,
-        inner_epoch_fraction=args.inner_epoch_fraction,
-        warmup_learning_rate=args.warmup_learning_rate,
-        learning_rate=args.learning_rate,
-        weight_decay=args.weight_decay,
-        device=torch.device(args.device),
-        choose_random_iterate=args.choose_random_iterate)
-
-    output = {
-        'script': __file__,
-        'argv': sys.argv,
-        'args': args.__dict__,
-        'metrics': metrics
-    }
-    if args.output_path is not None:
-        with open(args.output_path, 'w') as f:
-            json.dump(output, f)
-        print('Wrote output to:', args.output_path)
-
-    if args.plot:
-        plot_svrg_run(run=output, key='train_loss')
-        plt.show()
-
-
-if __name__ == '__main__':
-    main()

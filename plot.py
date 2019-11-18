@@ -3,17 +3,16 @@ import json
 import matplotlib.pyplot as plt
 
 
-
 def create_plot(runs, key):
     plt.xlabel('#grad/n')
     plt.ylabel(key)
     for run in runs:
-        if run['script'] == 'sgd.py':
+        if run['args']['optimizer'] == 'SGD':
             plot_sgd_run(run=run, key=key)
-        elif run['script'] == 'svrg.py':
+        elif run['args']['optimizer'] == 'SVRG':
             plot_svrg_run(run=run, key=key)
         else:
-            raise ValueError('Unrecognized script: {}'.format(run['script']))
+            raise ValueError('Unrecognized optimizer: {}'.format(run['args']['optimizer']))
     plt.legend()
     plt.show()
 
