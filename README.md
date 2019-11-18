@@ -18,6 +18,63 @@ Example Usage:
 * Liyi (Leo) Zhang
 * Chengkuan (Kuan) Chen
 
+## Experiment Setting
+### Reproducible work
+**MNIST SVRG**
+  - learning rate: To be tuned
+  - num_warmup_epoch 10
+  - num_outer_epoch 242 (solve from (sn + 2sm / n) = 290 with m = n/10)
+  - inner_epoch_fraction 0.1 (from m = n / 10)
+  - batch_size 10
+**MNIST SGD**
+  - learning rate: To be tuned
+  - num_epoch 300
+  - batch_size 10
+  - l2-regularization 1e-3
+
+**CIFAR SVRG**
+  - learning rate: To be tuned
+  - num_warmup_epoch: 10
+  - num_outer_epoch: 408 (solve from (sn + 2sm / n) = 490 with m = n/10, we assume the rightmost value of x-axis is 500)
+  - inner_epoch_fraction 0.1
+  - batch_size: 10
+
+**CIFAR SGD**
+  - learning rate: To be tuned
+  - num_epoch 500
+  - batch_size 10
+  - l2-regularization 1e-3
+
+**STL SVRG**
+  - learning rate: To be tuned
+  - num_warmup_epoch: 20
+  - num_outer_epoch 242 (solve from (sn + 2sm / n) = 290 with m = n/10)
+  - inner_epoch_fraction 0.1 (from m = n / 10)
+  - batch_size 10
+
+
+**STL SGD**
+  - learning rate: To be tuned
+  - num_epoch 300
+  - batch_size 10
+  - l2-regularization 1e-4
+
+### Further evaluation work
+## References	
+**Deeper Neural Net**
+  - Compare method: SGD/SVRG
+  - dataset: MNIST
+  - network: 3 layer MLP with hidden unit = 100 and relu as activate function
+  
+**Rosenbrock function**
+  - Goal: Whether SVRG is better than SGD when the objective function has many saddle points
+  - Compare mathod: SGD/SVRG
+  - dataset: Rosenbrock data (size = 60000)
+
+**Eggholder function**
+  - Goal: Whether SVRG is better than SGD when the objective function has many local minima
+  - Compare mathod: SGD/SVRG
+  - dataset: Rosenbrock data (size = 60000)
 
 ## References
 
