@@ -60,7 +60,7 @@ Example Usage:
   - l2-regularization 1e-4
 
 ### Further evaluation work
-## References	
+
 **Deeper Neural Net**
   - Compare method: SGD/SVRG
   - dataset: MNIST
