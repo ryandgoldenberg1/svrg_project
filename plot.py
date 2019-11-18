@@ -33,8 +33,11 @@ def plot_sgd_run(run, key):
 def plot_svrg_run(run, key):
     run_name = run['args']['run_name']
     metrics = run['metrics']
+
+    inner_epoch_fraction = run['args']['inner_epoch_fraction'] or 1.
     # SVRG paper counts target gradients per inner epoch only in nonconvex case
     grad_epochs_per_inner_epoch = 2 if len(run['args']['layer_sizes']) > 2 else 1
+    grad_epochs_per_inner_epoch *= inner_epoch_fraction
     grad_epochs_per_outer_epoch = 1 + run['args']['num_inner_epochs'] * grad_epochs_per_inner_epoch
     x = []
     for metric in metrics:

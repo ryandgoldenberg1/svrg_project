@@ -13,6 +13,7 @@ import torchvision
 from torchvision import datasets, transforms
 
 import utils
+from plot import plot_svrg_run
 
 
 class SVRGTrainer:
@@ -194,29 +195,19 @@ def main():
         device=torch.device(args.device),
         choose_random_iterate=args.choose_random_iterate)
 
+    output = {
+        'script': __file__,
+        'argv': sys.argv,
+        'args': args.__dict__,
+        'metrics': metrics
+    }
     if args.output_path is not None:
-        output = {
-            'script': __file__,
-            'argv': sys.argv,
-            'args': args.__dict__,
-            'metrics': metrics
-        }
         with open(args.output_path, 'w') as f:
             json.dump(output, f)
         print('Wrote output to:', args.output_path)
 
     if args.plot:
-        x = []
-        y = []
-        for el in metrics:
-            warmup_epoch = el.get('warmup_epoch') or args.num_warmup_epochs
-            outer_epoch = el.get('outer_epoch') or 0
-            inner_epoch = el.get('inner_epoch') or 0
-            grad_epoch = warmup_epoch + outer_epoch * (1 + inner_epoch)
-            x.append(grad_epoch)
-            y.append(el['train_loss'])
-        y = [el['train_loss'] for el in metrics]
-        plt.plot(x, y)
+        plot_svrg_run(run=output, key='train_loss')
         plt.show()
 
 
