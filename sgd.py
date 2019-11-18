@@ -25,7 +25,7 @@ class SDGTrainer:
             train_loss = 0
             for batch in train_loader:
                 # Training Step
-                data, label = batch
+                data, label = (x.to(device) for x in batch)
                 self.optimizer.zero_grad()
                 prediction = self.model(data)
                 loss = self.loss_fn(prediction, label)
@@ -73,13 +73,14 @@ if __name__ == '__main__':
     train_loader = torch.utils.data.DataLoader(train_ds, batch_size=args.batch_size, shuffle=True)
     print('dataset_size:', len(train_loader.dataset))
 
-    model = create_mlp(layer_sizes=args.layer_sizes)
+    device = torch.device(args.device)
+    model = create_mlp(layer_sizes=args.layer_sizes).to(device)
     print(model)
 
     loss_fn = nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay)
     trainer = SDGTrainer(model=model, loss_fn=loss_fn, optimizer=optimizer)
-    metrics = trainer.train(train_loader, num_epochs=args.num_epochs, device=torch.device(args.device))
+    metrics = trainer.train(train_loader, num_epochs=args.num_epochs, device=device)
 
     if args.output_path is not None:
         output = {
