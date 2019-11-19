@@ -72,7 +72,7 @@ Each experiment has a README including results and commands to reproduce.
   - batch_size 10
   - l2-regularization 1e-3
 
-#### [CIFAR10](experiments/nonconvex_mnist/README.md)
+#### [CIFAR10](experiments/nonconvex_cifar10/README.md)
 **CIFAR SVRG**
   - learning rate: To be tuned
   - num_warmup_epoch: 1

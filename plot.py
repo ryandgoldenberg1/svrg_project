@@ -51,6 +51,9 @@ def plot_svrg_run(run, key):
             grad_epoch += inner_epoch * grad_epochs_per_inner_epoch
         x.append(grad_epoch)
     y = [metric[key] for metric in metrics]
+    if key == 'grad_norm':
+        # Squared Grad Norm
+        y = [el**2 for el in y]
     print('run:', run_name)
     print('key:', key)
     print('x:', x)
@@ -64,6 +67,7 @@ def main():
     parser.add_argument('--key', default='train_loss', choices=['train_loss', 'grad_norm', 'test_error'])
     parser.add_argument('--y_top', type=float)
     parser.add_argument('--y_bottom', type=float)
+    parser.add_argument('--log_scale', default=False, action='store_true')
     parser.add_argument('--save_path')
     args = parser.parse_args()
     print(json.dumps(args.__dict__, indent=2))
@@ -81,6 +85,9 @@ def main():
     if args.y_bottom is not None:
         plt.ylim(bottom=args.y_bottom)
         print('Limited bottom of y axis to:', args.y_bottom)
+    if args.log_scale:
+        plt.yscale('log')
+        print('Using log scale')
     if args.save_path is not None:
         plt.savefig(args.save_path)
         print('Saved image to:', args.save_path)

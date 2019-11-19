@@ -2,6 +2,14 @@
 
 MNIST experiment from p.11 of "Stochastic Variance Reduction for Nonconvex Optimization".
 
+
+## Results
+
+Train Loss                 | Grad Norm                | Test Error
+:-------------------------:|:-------------------------:--------------
+![](train_loss.png)        |![](grad_norm.png)        |![](test_error.png)
+
+
 ## Hyperparameters
 
 * Layers: [784, 100, 10]
@@ -12,6 +20,44 @@ MNIST experiment from p.11 of "Stochastic Variance Reduction for Nonconvex Optim
 * Outer Epochs: At most 300
 * Learning Rate: Tuned on Training Loss (0.05)
 * Warmup Learning Rate: Tuned on Training Loss (0.03)
+
+
+## Commands
+```bash
+# SVRG Run
+train.py \
+  --seed 79 \
+  --optimizer SVRG \
+  --run_name svrg_0.05.json \
+  --output_path experiments/nonconvex_mnist/svrg-0.05.json \
+  --dataset MNIST \
+  --layer_sizes 784 100 10 \
+  --batch_size 10 \
+  --learning_rate 0.05 \
+  --weight_decay 0.001 \
+  --warmup_learning_rate 0.03 \
+  --num_warmup_epochs 10 \
+  --num_outer_epochs 250 \
+  --num_inner_epochs 1 \
+  --device cuda
+
+# Plots
+python plot.py \
+  --run_paths experiments/nonconvex_mnist/svrg-0.05.json \
+  --y_top 0.1 \
+  --key train_loss \
+  --save_path experiments/nonconvex_mnist/train_loss.png
+python plot.py \
+  --run_paths experiments/nonconvex_mnist/svrg-0.05.json \
+  --key grad_norm \
+  --log_scale \
+  --save_path experiments/nonconvex_mnist/grad_norm.png
+python plot.py \
+  --run_paths experiments/nonconvex_mnist/svrg-0.05.json \
+  --key test_error \
+  --y_top 0.03 \
+  --save_path experiments/nonconvex_mnist/test_error.png
+```
 
 
 ## Hyperparameter Tuning
