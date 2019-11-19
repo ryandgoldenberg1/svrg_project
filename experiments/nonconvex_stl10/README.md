@@ -4,9 +4,9 @@ STL10 experiment from p.11 of "Stochastic Variance Reduction for Nonconvex Optim
 
 ## Results
 
-Train Loss                 | Grad Norm                | Test Error
-:-------------------------:|:-------------------------:--------------
-![](train_loss.png)        |![](grad_norm.png)        |![](test_error.png)
+![](train_loss.png)
+![](grad_norm.png)
+![](test_error.png)
 
 
 ## Hyperparameters
