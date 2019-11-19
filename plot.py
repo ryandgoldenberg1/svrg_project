@@ -61,7 +61,9 @@ def plot_svrg_run(run, key):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--run_paths', nargs='+', required=True)
-    parser.add_argument('--key', default='train_loss')
+    parser.add_argument('--key', default='train_loss', choices=['train_loss', 'grad_norm', 'test_error'])
+    parser.add_argument('--y_top', type=float)
+    parser.add_argument('--y_bottom', type=float)
     parser.add_argument('--save_path')
     args = parser.parse_args()
     print(json.dumps(args.__dict__, indent=2))
@@ -73,6 +75,12 @@ def main():
             runs.append(run)
     print('Loaded runs')
     create_plot(runs=runs, key=args.key)
+    if args.y_top is not None:
+        plt.ylim(top=args.y_top)
+        print('Limited top of y axis to:', args.y_top)
+    if args.y_bottom is not None:
+        plt.ylim(bottom=args.y_bottom)
+        print('Limited bottom of y axis to:', args.y_bottom)
     if args.save_path is not None:
         plt.savefig(args.save_path)
         print('Saved image to:', args.save_path)

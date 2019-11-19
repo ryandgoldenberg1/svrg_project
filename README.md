@@ -53,7 +53,12 @@ python plot.py --key train_loss --run_paths sgd.json svrg.json --save_path sgd_s
 * Chengkuan (Kuan) Chen
 
 ## Experiment Setting
+
 ### Reproducible work
+
+Each experiment has a README including results and commands to reproduce.
+
+#### [MNIST](experiments/nonconvex_mnist/README.md)
 **MNIST SVRG**
   - learning rate: To be tuned
   - num_warmup_epoch 1
@@ -67,6 +72,7 @@ python plot.py --key train_loss --run_paths sgd.json svrg.json --save_path sgd_s
   - batch_size 10
   - l2-regularization 1e-3
 
+#### [CIFAR10](experiments/nonconvex_mnist/README.md)
 **CIFAR SVRG**
   - learning rate: To be tuned
   - num_warmup_epoch: 1
@@ -80,6 +86,7 @@ python plot.py --key train_loss --run_paths sgd.json svrg.json --save_path sgd_s
   - batch_size 10
   - l2-regularization 1e-3
 
+#### [STL10](experiments/nonconvex_stl10/README.md)
 **STL SVRG**
   - learning rate: To be tuned
   - num_warmup_epoch: 2

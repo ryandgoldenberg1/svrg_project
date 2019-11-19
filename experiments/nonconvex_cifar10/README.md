@@ -1,6 +1,9 @@
+# Nonconvex CIFAR10
+
 CIFAR10 experiment from p.11 of "Stochastic Variance Reduction for Nonconvex Optimization".
 
-## Parameters
+
+## Hyperparameters
 
 * Layers: [3072, 100, 10]
 * L2 Regularization: 1e-3
@@ -8,13 +11,11 @@ CIFAR10 experiment from p.11 of "Stochastic Variance Reduction for Nonconvex Opt
 * Warmup Epochs: 10
 * Inner Epochs: 1
 * Outer Epochs: At most 300
-* Learning Rate: Tuned on Training Loss
+* Learning Rate: Tuned on Training Loss (0.001)
 * Warmup Learning Rate: Tuned on Training Loss (0.01)
 
 
-## Commands
-
-## Tuning
+## Hyperparameter Tuning
 
 ```bash
 # Warmup Learning Rate Search
@@ -52,4 +53,14 @@ for lr in 0.5 0.25 0.1 0.05 0.025 0.01 0.005 0.001; do python train.py \
   --num_inner_epochs 1 \
   --device cuda
 done
+python plot.py \
+  --run_paths experiments/nonconvex_cifar10/svrg-*.json \
+  --key train_loss \
+  --save_path experiments/nonconvex_cifar10/svrg_results.png
 ```
+
+### Warmup Learning Rate Results
+![Warmup Learning Rate](warmup_results.png "Warmup Learning Rate")
+
+### SVRG Learning Rate Results
+![SVRG Learning Rate](svrg_results.png "SVRG Learning Rate")
