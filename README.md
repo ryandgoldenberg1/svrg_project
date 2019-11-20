@@ -106,7 +106,7 @@ Each experiment has a README including results and commands to reproduce.
 **Deeper Neural Net**
   - Compare method: SGD/SVRG
   - dataset: MNIST
-  - network: 3 layer MLP with hidden unit = 100 and relu as activate function
+  - network: MLP with hidden 600, 300 and relu as activate function
 
 **Rosenbrock function**
   - Goal: Whether SVRG is better than SGD when the objective function has many saddle points
