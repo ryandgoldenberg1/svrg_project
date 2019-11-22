@@ -72,5 +72,5 @@ for d in 'MNIST' 'CIFAR10' 'STL'; do
     --run_paths experiments/nonconvex_$d/svrg-*.json \
     --key train_loss \
     --save_path experiments/nonconvex_$d/svrg_results.png
-    
+done
 echo "Running SGD hyperparameter tuning of reproducibility experiment"
