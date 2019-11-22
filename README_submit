@@ -2,7 +2,7 @@ Following command shown how to run the experiment and generate the corresponding
 
 Fig. III
 
-```bash
+``` bash
 python train.py \
   --seed 79 \
   --optimizer SVRG \
