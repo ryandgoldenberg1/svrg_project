@@ -1,9 +1,9 @@
 Following command shown how to run the experiment and generate the corresponding figure
 
 Fig. III
-
-``` bash
-python train.py \
+```bash
+# SVRG Run
+train.py \
   --seed 79 \
   --optimizer SVRG \
   --run_name svrg_0.05.json \
@@ -18,4 +18,3 @@ python train.py \
   --num_outer_epochs 250 \
   --num_inner_epochs 1 \
   --device cuda
-```
