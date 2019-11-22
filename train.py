@@ -15,9 +15,9 @@ from torchvision import datasets, transforms
 from sgd import SGDTrainer
 from svrg import SVRGTrainer
 
-DATASET_TO_FN = {'MNIST': datasets.MNIST, 'CIFAR10': datasets.CIFAR10, 'STL10': datasets.STL10}
-DATASET_TO_TRAIN_KWARGS = {'MNIST': {'train': True}, 'CIFAR10': {'train': True}, 'STL10': {'split': 'train'}}
-DATASET_TO_TEST_KWARGS = {'MNIST': {'train': False}, 'CIFAR10': {'train': False}, 'STL10': {'split': 'test'}}
+DATASET_TO_FN = {'MNIST': datasets.MNIST, 'CIFAR10': datasets.CIFAR10, 'STL10': datasets.STL10, 'FMNIST':datasets.FashionMNIST}
+DATASET_TO_TRAIN_KWARGS = {'MNIST': {'train': True}, 'CIFAR10': {'train': True}, 'STL10': {'split': 'train'}, 'FMNIST':{'train': True}}
+DATASET_TO_TEST_KWARGS = {'MNIST': {'train': False}, 'CIFAR10': {'train': False}, 'STL10': {'split': 'test'}, 'FMNIST':{'train': True}}
 
 
 def create_mlp(layer_sizes):
@@ -65,7 +65,7 @@ def main():
     parser.add_argument('--device', default='cpu', choices=['cpu', 'cuda'])
     # Dataset Args
     group = parser.add_argument_group('dataset arguments')
-    group.add_argument('--dataset', default='MNIST', choices=['MNIST', 'CIFAR10', 'STL10'])
+    group.add_argument('--dataset', default='MNIST', choices=['MNIST', 'CIFAR10', 'STL10', 'FMNIST'])
     group.add_argument('--dataset_root', default='~/datasets/pytorch')
     group.add_argument('--dataset_size', type=int)
     group.add_argument('--download', default=False, action='store_true')
