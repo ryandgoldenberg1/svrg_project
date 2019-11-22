@@ -2,7 +2,8 @@ Following command shown how to run the experiment and generate the corresponding
 
 Fig. III
 
-```python train.py \
+```bash
+python train.py \
   --seed 79 \
   --optimizer SVRG \
   --run_name svrg_0.05.json \
