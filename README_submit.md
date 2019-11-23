@@ -1,4 +1,8 @@
-Following command shown how to run the experiment. For generating plot used in paper, please refer to run_plot.sh. 
+Following command shown how to run the experiment. For generating plot used in paper, please refer to run_plot.sh.
+
+# Requrement
+  - Python3
+  - pytorch >=1.3
 
 # Reproducibility of paper result
 ## CIFAR 10
@@ -41,6 +45,7 @@ python train.py \
 ```
 
 ## STL
+```
 python train.py \
   --seed 77 \
   --optimizer SVRG \
@@ -57,7 +62,7 @@ python train.py \
   --num_inner_epochs 1 \
   --device cuda \
   --download
-  
+```
 # Critical evaluatin result
 ## MNIST with deeper network
 ```
@@ -98,7 +103,7 @@ python train.py \
   --download
 ``` 
 # Running Hyperparameter search
-Pleae open any `.sh` file and paste the corresponding code to execution
+Pleae open any new `.sh` file and paste the corresponding code to run
 
 ## SVRG CIFAR 10
 ```bash
