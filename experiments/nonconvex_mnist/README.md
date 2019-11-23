@@ -57,6 +57,12 @@ python plot.py \
   --key test_error \
   --y_top 0.03 \
   --save_path experiments/nonconvex_mnist/test_error.png
+python plot.py \
+  --run_paths mnist_sgd_fixed0001.json mnist_svrg05.json
+  --key train_loss
+python plot.py \
+  --run_paths mnist_sgd_fixed0001.json mnist_svrg05.json
+  --key gran_norm
 ```
 
 
