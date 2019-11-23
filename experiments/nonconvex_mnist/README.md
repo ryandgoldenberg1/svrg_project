@@ -58,11 +58,11 @@ python plot.py \
   --y_top 0.03 \
   --save_path experiments/nonconvex_mnist/test_error.png
 python plot.py \
-  --run_paths mnist_sgd_fixed0001.json mnist_svrg05.json
+  --run_paths experiments/nonconvex_mnist/mnist_sgd_fixed0001.json experiments/nonconvex_mnist/mnist_svrg05.json
   --key train_loss
 python plot.py \
-  --run_paths mnist_sgd_fixed0001.json mnist_svrg05.json
-  --key gran_norm
+  --run_paths experiments/nonconvex_mnist/mnist_sgd_fixed0001.json experiments/nonconvex_mnist/mnist_svrg05.json
+  --key grad_norm
 ```
 
 
