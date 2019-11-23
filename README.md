@@ -2,6 +2,8 @@
 
 Group project for Columbia course COMS4995-004 Optimization for Machine Learning ([webpage](https://www.satyenkale.com/optml-f19/)). The goal of the project is to implement and understand the optimization methods from the paper "Stochastic Variance Reduction for Nonconvex Optimization".
 
+[Final report](https://drive.google.com/file/d/1erhDAdLBGDkpXfznAalONYDWySlnkY3v/view?usp=sharing)
+
 ## Scripts
 
 
