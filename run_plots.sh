@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CIFAR
+# CIFAR
 python plot.py \
   --run_paths experiments/nonconvex_cifar10/cifar10_sgd_fixed001.json experiments/nonconvex_cifar10/cifar10_svrg.json \
   --key grad_norm \
@@ -86,9 +86,23 @@ python plot.py \
     --key train_loss \
     --save_path experiments/nonconvex_mnist_deep/svrg_results.png
 
+# FMNIST
+python plot.py \
+  --run_paths experiments/nonconvex_fmnist/sgd-0.01.json experiments/nonconvex_fmnist_deep/svrg-0.001.json \
+  --key grad_norm \
+  --save_path experiments/nonconvex_fmnist/grad_norm_sgd_svrg.png
 
+python plot.py \
+  --run_paths experiments/nonconvex_fmnist/sgd-0.01.json experiments/nonconvex_fmnist_deep/svrg-0.001.json \
+  --key train_loss \
+  --save_path experiments/nonconvex_fmnist/train_loss_sgd_svrg.png
 
+python plot.py \
+    --run_paths experiments/nonconvex_fmnist/warmup-*.json \
+    --key train_loss \
+    --save_path experiments/nonconvex_fmnist/warmup_results.png
 
-
-
-
+python plot.py \
+    --run_paths experiments/nonconvex_fmnist_deep/svrg-*.json \
+    --key train_loss \
+    --save_path experiments/nonconvex_fmnist_deep/svrg_results.png
