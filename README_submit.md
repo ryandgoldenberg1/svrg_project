@@ -3,6 +3,7 @@ Following command shown how to run the experiment. For generating plot used in p
 # Requrement
   - Python3
   - pytorch >=1.3
+Note that if you don't have cuda device, you should turn off the `--device cuda` flag.
 
 # Reproducibility of paper result
 ## CIFAR 10
