@@ -9,6 +9,11 @@ import utils
 
 
 class SVRGTrainer:
+    """Class for training models using Stochastic Variance Reduced Gradient.
+
+    create_model: () -> torch.nn.Module function to create Pytorch model
+    loss_fn: Function of the form (predictions, labels) -> loss
+    """
     def __init__(self, create_model, loss_fn):
         self.create_model = create_model
         self.loss_fn = loss_fn
@@ -16,6 +21,28 @@ class SVRGTrainer:
     def train(self, *, train_loader, test_loader, num_warmup_epochs, num_outer_epochs, num_inner_epochs,
               inner_epoch_fraction, warmup_learning_rate, learning_rate, device, weight_decay, choose_random_iterate,
               **kwargs):
+        """Executes training for the model over the given dataset and hyperparameters.
+
+        Inputs:
+        train_loader: torch.utils.data.DataLoader data loader for the training dataset
+        test_loader: torch.utils.data.DataLoader data loader for the test dataset
+        num_warmup_epochs: number of epochs to run SGD before starting SVRG
+        num_outer_epochs: number of outer SVRG iterations
+        num_inner_epochs: number of inner epochs to run for each outer epoch of SVRG.
+        inner_epoch_fraction: if the number of inner iterations is not an integer number of epochs, this parameter
+            can be used to specify the fraction of batches to iterate over. Only supported for less than a single epoch.
+        warmup_learning_rate: the learning rate to use for SGD during the warmup phase.
+        learning_rate: the learning rate to use for SVRG.
+        device: string denoting the device to run on. "cuda" or "cpu" are expected.
+        weight_decay: L2 regularization hyperparameter, used for both warmup for SVRG phases.
+        choose_random_iterate: if True, a random inner iterate will be chosen for the weights to use for the next
+            outer epoch. otherwise, it will use the last inner iterate.
+        kwargs: any additional keyword arguments will be excepted but ignored.
+
+        Returns:
+        metrics: a list of dictionaries containing information about the run, including the training loss,
+            gradient norm, and test error for each epoch.
+        """
         print('SVRGTrainer Hyperparameters:', json.dumps({
             'num_warmup_epochs': num_warmup_epochs,
             'num_outer_epochs': num_outer_epochs,
@@ -85,10 +112,10 @@ class SVRGTrainer:
                 examples_seen = 0
                 epoch_start = time.time()
                 for batch_idx, batch in enumerate(train_loader):
-
                     data, label = (x.to(device) for x in batch)
                     optimizer.zero_grad()
 
+                    # Calculate target model gradient
                     target_model.zero_grad()
                     target_model_out = target_model(data)
                     target_model_loss = self.loss_fn(target_model_out, label)
@@ -96,6 +123,7 @@ class SVRGTrainer:
                     target_model_grad = torch.cat(
                         [x.grad.view(-1) for x in target_model.parameters()]).detach()
 
+                    # Calculate current model loss
                     model_weights = torch.cat(
                         [x.view(-1) for x in model.parameters()])
                     model_out = model(data)
@@ -109,6 +137,7 @@ class SVRGTrainer:
                     aux_loss.backward()
                     optimizer.step()
 
+                    # Bookkeeping
                     train_loss += model_loss.item() * len(data)
                     examples_seen += len(data)
                     copy_state_dict = copy.deepcopy(model.state_dict())
@@ -120,6 +149,7 @@ class SVRGTrainer:
                     batch_num = batch_idx + 1
                     if batch_num >= inner_batches:
                         break
+                # Calculate metrics for logging
                 avg_train_loss = train_loss / examples_seen
                 model_grad_norm = utils.calculate_full_gradient_norm(
                     model=model, data_loader=train_loader, loss_fn=self.loss_fn, device=device)
@@ -135,6 +165,8 @@ class SVRGTrainer:
                     epoch, num_outer_epochs, sub_epoch, num_inner_epochs, avg_train_loss, model_grad_norm, test_error,
                     ex_per_sec / 1000))  # noqa
 
+            # This choice corresponds to options I and II from the SVRG paper. Depending on the hyperparameter it
+            # will either choose the last inner iterate for the target model, or use a random iterate.
             if choose_random_iterate:
                 new_target_state_dict = random.choice(model_state_dicts)
             else:

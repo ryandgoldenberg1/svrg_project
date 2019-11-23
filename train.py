@@ -21,6 +21,14 @@ DATASET_TO_TEST_KWARGS = {'MNIST': {'train': False}, 'CIFAR10': {'train': False}
 
 
 def create_mlp(layer_sizes):
+    """Creates a multilayer perceptron.
+
+    Inputs:
+    layer_sizes: list of network dimensions. must be at least length 2.
+
+    Returns:
+    torch.nn.Module Pytorch neural network
+    """
     layers = [nn.Flatten()]
     for i in range(1, len(layer_sizes)):
         in_size = layer_sizes[i - 1]
@@ -32,6 +40,16 @@ def create_mlp(layer_sizes):
 
 
 def get_dataset(dataset, root, download):
+    """Retrieves a dataset by name.
+
+    Inputs:
+    dataset: string name of the dataset. see the keys of DATASET_TO_FN for supported datasets.
+    root: the root directory of the dataset.
+    download: whether to download the dataset if it is not found.
+
+    Returns:
+    (train_dataset, test_dataset) tuple of training and test dataset, both instances of torch.utils.data.Dataset
+    """
     assert dataset in DATASET_TO_FN, 'Unrecognized dataset: {}'.format(dataset)
     dataset_fn = DATASET_TO_FN[dataset]
     common_kwargs = {'root': root, 'download': download, 'transform': transforms.ToTensor()}
@@ -41,6 +59,14 @@ def get_dataset(dataset, root, download):
 
 
 def create_trainer(args):
+    """Creates either a SGDTrainer or SVRGTrainer instance for the arguments.
+
+    Inputs:
+    args: parsed command line arguments from the main() script below.
+
+    Returns:
+    an instance of SGDTrainer or SVRGTrainer
+    """
     device = torch.device(args.device)
     loss_fn = nn.CrossEntropyLoss()
 
@@ -57,6 +83,7 @@ def create_trainer(args):
 
 
 def main():
+    """Entrypoint for training an MLP with SVRG or SGD."""
     parser = argparse.ArgumentParser()
     parser.add_argument('--seed', type=int)
     parser.add_argument('--optimizer', choices=['SGD', 'SVRG'], required=True)
