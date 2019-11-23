@@ -55,6 +55,12 @@ python plot.py \
   --run_paths experiments/nonconvex_cifar10/svrg-0.001.json \
   --key test_error \
   --save_path experiments/nonconvex_cifar10/test_error.png
+python plot.py \
+  --run_paths experiments/nonconvex_cifar10/cifar_sgd_fixed001.json experiments/nonconvex_cifar10/cifar_svrg.json \
+  --key train_loss
+python plot.py \
+  --run_paths experiments/nonconvex_cifar10/cifar_sgd_fixed001.json experiments/nonconvex_cifar10/cifar_svrg.json \
+  --key grad_norm
 ```
 
 ## Hyperparameter Tuning
