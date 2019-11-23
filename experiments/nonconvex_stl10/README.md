@@ -55,6 +55,12 @@ python plot.py \
   --key test_error \
   --y_top 0.68 \
   --save_path experiments/nonconvex_stl10/test_error.png
+python plot.py \
+  --run_paths experiments/nonconvex_stl10/stl_sgd_fixed001.json experiments/nonconvex_stl10/stl_svrg.json \
+  --key train_loss
+python plot.py \
+  --run_paths experiments/nonconvex_stl10/stl_sgd_fixed001.json experiments/nonconvex_stl10/stl_svrg.json \
+  --key grad_norm 
 ```
 
 ## Hyperparameter Tuning
