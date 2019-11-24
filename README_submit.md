@@ -9,7 +9,7 @@ Note that if you don't have cuda device, you should turn off the `--device cuda`
 # Instruction to run the code
 If you just want to generate the plot used in the report
   * Download the [experiment result](https://drive.google.com/file/d/10y46HCsfj6a1Mt6vzCJE_VZU2bf9Up4l/view?usp=sharing) then unzip
-  * `. run_plot.sh`
+  * `. run_plots.sh`
 
 If you want to re-run all experiments that generate the figure (WARNING: May take around a week in single node)
   * `. run.sh`
