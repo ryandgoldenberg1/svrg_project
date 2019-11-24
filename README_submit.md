@@ -31,14 +31,14 @@ python train.py \
 python train.py \
   --seed 83 \
   --optimizer SGD \
-  --run_name sgd_0.001.json \
-  --output_path experiments/nonconvex_cifar10/sgd-0.001.json \
+  --run_name sgd_0.01.json \
+  --output_path experiments/nonconvex_cifar10/sgd-0.01.json \
   --dataset CIFAR10 \
   --layer_sizes 3072 100 10 \
   --batch_size 10 \
-  --learning_rate 0.001 \
+  --learning_rate 0.01 \
   --weight_decay 0.001 \
-  --num_epochs 260
+  --num_epochs 300
   --device cuda \
   --download
  ```
@@ -66,14 +66,14 @@ python train.py \
 python train.py \
   --seed 79 \
   --optimizer SGD \
-  --run_name sgd_0.001.json \
-  --output_path experiments/nonconvex_mnist/sgd-0.001.json \
+  --run_name sgd_0.01.json \
+  --output_path experiments/nonconvex_mnist/sgd-0.01.json \
   --dataset MNIST \
   --layer_sizes 784 100 10 \
   --batch_size 10 \
-  --learning_rate 0.001 \
+  --learning_rate 0.01 \
   --weight_decay 0.001 \
-  --num_epochs 260
+  --num_epochs 300
   --device cuda \
   --download
 ```
@@ -101,14 +101,14 @@ python train.py \
 python train.py \
   --seed 77 \
   --optimizer SGD \
-  --run_name sgd_0.001.json \
-  --output_path experiments/nonconvex_stl10/sgd-0.001.json \
+  --run_name sgd_0.01.json \
+  --output_path experiments/nonconvex_stl10/sgd-0.01.json \
   --dataset STL10 \
   --layer_sizes 27648 100 10 \
   --batch_size 10 \
-  --learning_rate 0.001 \
+  --learning_rate 0.01 \
   --weight_decay 0.001 \
-  --num_epochs 260
+  --num_epochs 300
   --device cuda \
   --download
 ```
@@ -156,12 +156,12 @@ done
 python train.py \
   --seed 79 \
   --optimizer SVRG \
-  --run_name svrg_0.001.json \
-  --output_path experiments/nonconvex_fmnist/svrg-0.001.json \
+  --run_name svrg_0.005.json \
+  --output_path experiments/nonconvex_fmnist/svrg-0.005.json \
   --dataset FMNIST \
   --layer_sizes 784 100 10 \
   --batch_size 10 \
-  --learning_rate 0.001 \
+  --learning_rate 0.005 \
   --weight_decay 0.001 \
   --warmup_learning_rate 0.03 \
   --num_warmup_epochs 10 \
