@@ -31,7 +31,7 @@ python train.py \
   --batch_size 10 \
   --learning_rate 0.01 \
   --weight_decay 0.001 \
-  --num_epochs 300
+  --num_epochs 300 \
   --device cuda \
   --download
 
@@ -64,7 +64,7 @@ python train.py \
   --batch_size 10 \
   --learning_rate 0.01 \
   --weight_decay 0.001 \
-  --num_epochs 300
+  --num_epochs 300 \
   --device cuda \
   --download
 
@@ -98,7 +98,7 @@ python train.py \
   --batch_size 10 \
   --learning_rate 0.01 \
   --weight_decay 0.001 \
-  --num_epochs 300
+  --num_epochs 300 \
   --device cuda \
   --download
 
