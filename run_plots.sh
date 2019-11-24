@@ -2,14 +2,14 @@
 
 # CIFAR
 python plot.py \
-  --run_paths experiments/nonconvex_cifar10/cifar10_sgd_fixed001.json experiments/nonconvex_cifar10/cifar10_svrg.json \
+  --run_paths experiments/nonconvex_cifar10/sgd-0.01.json experiments/nonconvex_cifar10/svrg-0.001.json \
   --key grad_norm \
-  --save_path experiments/nonconvex_cifar10/compare-cifar10-gradnorm-fixed001.png
+  --save_path experiments/nonconvex_cifar10/compare-cifar10-gradnorm-0.01.png
 
 python plot.py \
-  --run_paths experiments/nonconvex_cifar10/cifar10_sgd_fixed001.json experiments/nonconvex_cifar10/cifar10_svrg.json \
+  --run_paths experiments/nonconvex_cifar10/sgd-0.01.json experiments/nonconvex_cifar10/svrg-0.001.json \
   --key train_loss \
-  --save_path experiments/nonconvex_cifar10/compare-cifar10-trainloss-fixed001.png
+  --save_path experiments/nonconvex_cifar10/compare-cifar10-trainloss-0.01.png
 
 python plot.py \
     --run_paths experiments/nonconvex_cifar10/warmup-*.json \
@@ -23,14 +23,14 @@ python plot.py \
 
 # MNIST
 python plot.py \
-  --run_paths experiments/nonconvex_mnist/mnist_sgd_fixed001.json experiments/nonconvex_mnist/mnist_svrg.json \
+  --run_paths experiments/nonconvex_mnist/sgd-0.01.json experiments/nonconvex_mnist/svrg-0.001.json \
   --key grad_norm \
-  --save_path experiments/nonconvex_mnist/compare-mnist-gradnorm-fixed001.png
+  --save_path experiments/nonconvex_mnist/compare-mnist-gradnorm-0.01.png
 
 python plot.py \
-  --run_paths experiments/nonconvex_mnist/mnist_sgd_fixed001.json experiments/nonconvex_mnist/mnist_svrg.json \
+  --run_paths experiments/nonconvex_mnist/sgd-0.01.json experiments/nonconvex_mnist/svrg-0.001.json \
   --key train_loss \
-  --save_path experiments/nonconvex_mnist/compare-mnist-trainloss-fixed001.png
+  --save_path experiments/nonconvex_mnist/compare-mnist-trainloss-0.01.png
 python plot.py \
     --run_paths experiments/nonconvex_mnist/warmup-*.json \
     --key train_loss \
@@ -44,14 +44,14 @@ python plot.py \
     --y_bottom 0.05
 # STL
 python plot.py \
-  --run_paths experiments/nonconvex_stl10/stl10_sgd_fixed001.json experiments/nonconvex_stl10/stl10_svrg.json \
+  --run_paths experiments/nonconvex_stl10/sgd-0.01.json experiments/nonconvex_stl10/svrg-0.001.json \
   --key grad_norm \
-  --save_path experiments/nonconvex_stl10/compare-stl10-gradnorm-fixed001.png
+  --save_path experiments/nonconvex_stl10/compare-stl10-gradnorm-0.01.png
 
 python plot.py \
-  --run_paths experiments/nonconvex_stl10/stl10_sgd_fixed001.json experiments/nonconvex_stl10/stl10_svrg.json \
+  --run_paths experiments/nonconvex_stl10/sgd-0.01.json experiments/nonconvex_stl10/svrg-0.001.json \
   --key train_loss \
-  --save_path experiments/nonconvex_stl10/compare-stl10-trainloss-fixed001.png
+  --save_path experiments/nonconvex_stl10/compare-stl10-trainloss-0.01.png
 python plot.py \
     --run_paths experiments/nonconvex_stl10/warmup-*.json \
     --key train_loss \
