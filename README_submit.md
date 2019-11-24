@@ -30,7 +30,7 @@ python train.py \
  ```bash
 python train.py \
   --optimizer SGD \
-  --run_name svrg_0.001.json \
+  --run_name sgd_0.001.json \
   --output_path experiments/nonconvex_cifar10/sgd-0.001.json \
   --dataset CIFAR10 \
   --layer_sizes 3072 100 10 \
