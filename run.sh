@@ -3,6 +3,40 @@
 # For rproducibility result
 echo "Running reproducibility experiment on MNIST, CIFAR10 and STL"
 
+echo "Running SGD"
+python train.py \
+    --optimizer SGD \
+    --run_name sgd-0.01.json \
+    --output_path experiments/nonconvex_mnist/sgd-0.01.json \
+    --dataset MNIST \
+    --layer_sizes 784 100 10 \
+    --batch_size 10 \
+    --learning_rate 0.01 \
+    --weight_decay 0.001 \
+    --num_epochs 260
+
+python train.py \
+    --optimizer SGD \
+    --run_name sgd-0.01.json \
+    --output_path experiments/nonconvex_cifar10/sgd-0.01.json \
+    --dataset CIFAR10 \
+    --layer_sizes 3072 100 10 \
+    --batch_size 10 \
+    --learning_rate 0.01 \
+    --weight_decay 0.001 \
+    --num_epochs 260
+
+python train.py \
+    --optimizer SGD \
+    --run_name sgd-0.01.json \
+    --output_path experiments/nonconvex_stl10/sgd-0.01.json \
+    --dataset STL10 \
+    --layer_sizes 27648 100 10 \
+    --batch_size 10 \
+    --learning_rate 0.01 \
+    --weight_decay 0.001 \
+    --num_epochs 260
+
 for d in 'MNIST' 'CIFAR10' 'STL'; do
   echo "Running SVRG"
   python train.py \
@@ -19,18 +53,6 @@ for d in 'MNIST' 'CIFAR10' 'STL'; do
     --num_warmup_epochs 10 \
     --num_outer_epochs 250 \
     --num_inner_epochs 1 \
-    --device cuda
-
-  echo "Running SGD"
-  python train.py \
-    --optimizer SGD \
-    --run_name sgd-0.01.json \
-    --output_path experiments/nonconvex_$d/sgd-0.01.json \
-    --dataset $d \
-    --layer_sizes 784 100 10 \
-    --batch_size 10 \
-    --learning_rate 0.01 \
-    --weight_decay 0.001 \
     --device cuda
 
   echo "Plotting the result of SGD and SVRG"
