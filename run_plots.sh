@@ -83,17 +83,29 @@ python plot.py \
 python plot.py \
     --run_paths experiments/nonconvex_mnist_deep/svrg-*.json \
     --key train_loss \
+<<<<<<< HEAD
     --save_path experiments/nonconvex_mnist_deep/svrg_results.png \
     --y_top 0.5 \
     --y_bottom 0.001
 # FMNIST
 python plot.py \
   --run_paths experiments/nonconvex_fmnist/sgd-0.01.json experiments/nonconvex_fmnist/svrg-0.005.json \
+=======
+    --save_path experiments/nonconvex_mnist_deep/svrg_results.png
+
+# FMNIST
+python plot.py \
+  --run_paths experiments/nonconvex_fmnist/sgd-0.01.json experiments/nonconvex_fmnist_deep/svrg-0.001.json \
+>>>>>>> 95af29dc1da8f5b62a216e4028c50799a78cd589
   --key grad_norm \
   --save_path experiments/nonconvex_fmnist/grad_norm_sgd_svrg.png
 
 python plot.py \
+<<<<<<< HEAD
   --run_paths experiments/nonconvex_fmnist/sgd-0.01.json experiments/nonconvex_fmnist/svrg-0.005.json \
+=======
+  --run_paths experiments/nonconvex_fmnist/sgd-0.01.json experiments/nonconvex_fmnist_deep/svrg-0.001.json \
+>>>>>>> 95af29dc1da8f5b62a216e4028c50799a78cd589
   --key train_loss \
   --save_path experiments/nonconvex_fmnist/train_loss_sgd_svrg.png
 
@@ -103,6 +115,12 @@ python plot.py \
     --save_path experiments/nonconvex_fmnist/warmup_results.png
 
 python plot.py \
+<<<<<<< HEAD
     --run_paths experiments/nonconvex_fmnist/svrg-*.json \
     --key train_loss \
     --save_path experiments/nonconvex_fmnist/svrg_results.png
+=======
+    --run_paths experiments/nonconvex_fmnist_deep/svrg-*.json \
+    --key train_loss \
+    --save_path experiments/nonconvex_fmnist_deep/svrg_results.png
+>>>>>>> 95af29dc1da8f5b62a216e4028c50799a78cd589
