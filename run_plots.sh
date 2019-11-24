@@ -60,8 +60,8 @@ python plot.py \
     --run_paths experiments/nonconvex_stl10/svrg-*.json \
     --key train_loss \
     --save_path experiments/nonconvex_stl10/svrg_results.png \
-    --y_top 2.5
-
+    --y_top 2.5 \
+    --y_bottom 0.0
 # Deep MNIST
 
 python plot.py \
