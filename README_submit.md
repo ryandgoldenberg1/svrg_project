@@ -61,6 +61,21 @@ python train.py \
   --download
 ```
 
+```bash
+python train.py \
+  --optimizer SGD \
+  --run_name sgd_0.001.json \
+  --output_path experiments/nonconvex_mnist/sgd-0.001.json \
+  --dataset MNIST \
+  --layer_sizes 784 100 10 \
+  --batch_size 10 \
+  --learning_rate 0.001 \
+  --weight_decay 0.001 \
+  --num_epochs 260
+  --device cuda \
+  --download
+```
+
 ## STL
 ```
 python train.py \
@@ -80,6 +95,21 @@ python train.py \
   --device cuda \
   --download
 ```
+```bash
+python train.py \
+  --optimizer SGD \
+  --run_name sgd_0.001.json \
+  --output_path experiments/nonconvex_stl10/sgd-0.001.json \
+  --dataset STL10 \
+  --layer_sizes 27648 100 10 \
+  --batch_size 10 \
+  --learning_rate 0.001 \
+  --weight_decay 0.001 \
+  --num_epochs 260
+  --device cuda \
+  --download
+```
+
 # Critical evaluatin result
 ## MNIST with deeper network
 ```
