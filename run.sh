@@ -22,6 +22,16 @@ for d in 'MNIST' 'CIFAR10' 'STL'; do
     --device cuda
 
   echo "Running SGD"
+  python train.py \
+    --optimizer SGD \
+    --run_name sgd-0.01.json \
+    --output_path experiments/nonconvex_$d/sgd-0.01.json \
+    --dataset $d \
+    --layer_sizes 784 100 10 \
+    --batch_size 10 \
+    --learning_rate 0.01 \
+    --weight_decay 0.001 \
+    --device cuda
 
   echo "Plotting the result of SGD and SVRG"
 done
