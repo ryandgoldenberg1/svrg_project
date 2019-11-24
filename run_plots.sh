@@ -4,12 +4,12 @@
 python plot.py \
   --run_paths experiments/nonconvex_cifar10/sgd-0.01.json experiments/nonconvex_cifar10/svrg-0.001.json \
   --key grad_norm \
-  --save_path experiments/nonconvex_cifar10/compare-cifar10-gradnorm-0.01.png
+  --save_path experiments/nonconvex_cifar10/gradnorm_sgd_lr001_svrg_lr0001.png
 
 python plot.py \
   --run_paths experiments/nonconvex_cifar10/sgd-0.01.json experiments/nonconvex_cifar10/svrg-0.001.json \
   --key train_loss \
-  --save_path experiments/nonconvex_cifar10/compare-cifar10-trainloss-0.01.png
+  --save_path experiments/nonconvex_cifar10/trainloss_sgd_lr001_svrg_lr0001.png
 
 python plot.py \
     --run_paths experiments/nonconvex_cifar10/warmup-*.json \
@@ -23,14 +23,13 @@ python plot.py \
 
 # MNIST
 python plot.py \
-  --run_paths experiments/nonconvex_mnist/sgd-0.01.json experiments/nonconvex_mnist/svrg-0.001.json \
+  --run_paths experiments/nonconvex_mnist/sgd-0.01.json experiments/nonconvex_mnist/svrg-0.05.json \
   --key grad_norm \
-  --save_path experiments/nonconvex_mnist/compare-mnist-gradnorm-0.01.png
-
+  --save_path experiments/nonconvex_mnist/gradnorm_sgd_lr001_svrg_lr005.png
 python plot.py \
-  --run_paths experiments/nonconvex_mnist/sgd-0.01.json experiments/nonconvex_mnist/svrg-0.001.json \
+  --run_paths experiments/nonconvex_mnist/sgd-0.01.json experiments/nonconvex_mnist/svrg-0.05.json \
   --key train_loss \
-  --save_path experiments/nonconvex_mnist/compare-mnist-trainloss-0.01.png
+  --save_path experiments/nonconvex_mnist/trainloss_sgd_lr001_svrg_lr005.png
 python plot.py \
     --run_paths experiments/nonconvex_mnist/warmup-*.json \
     --key train_loss \
@@ -46,12 +45,12 @@ python plot.py \
 python plot.py \
   --run_paths experiments/nonconvex_stl10/sgd-0.01.json experiments/nonconvex_stl10/svrg-0.001.json \
   --key grad_norm \
-  --save_path experiments/nonconvex_stl10/compare-stl10-gradnorm-0.01.png
+  --save_path experiments/nonconvex_stl10/gradnorm_sgd_lr001_svrg_lr0001.png
 
 python plot.py \
   --run_paths experiments/nonconvex_stl10/sgd-0.01.json experiments/nonconvex_stl10/svrg-0.001.json \
   --key train_loss \
-  --save_path experiments/nonconvex_stl10/compare-stl10-trainloss-0.01.png
+  --save_path experiments/nonconvex_stl10/trainloss_sgd_lr001_svrg_lr0001.png
 python plot.py \
     --run_paths experiments/nonconvex_stl10/warmup-*.json \
     --key train_loss \
@@ -68,12 +67,12 @@ python plot.py \
 python plot.py \
   --run_paths experiments/nonconvex_mnist_deep/sgd-0.01.json experiments/nonconvex_mnist_deep/svrg-0.025.json \
   --key grad_norm \
-  --save_path experiments/nonconvex_mnist_deep/grad_norm_sgd_svrg.png
+  --save_path experiments/nonconvex_mnist_deep/gradnorm_sgd_lr001_svrg_lr0025.png
 
 python plot.py \
   --run_paths experiments/nonconvex_mnist_deep/sgd-0.01.json experiments/nonconvex_mnist_deep/svrg-0.025.json \
   --key train_loss \
-  --save_path experiments/nonconvex_mnist_deep/train_loss_sgd_svrg.png
+  --save_path experiments/nonconvex_mnist_deep/trainloss_sgd_lr001_svrg_lr0025.png
 
 python plot.py \
     --run_paths experiments/nonconvex_mnist_deep/warmup-*.json \
@@ -90,12 +89,12 @@ python plot.py \
 python plot.py \
   --run_paths experiments/nonconvex_fmnist/sgd-0.01.json experiments/nonconvex_fmnist/svrg-0.005.json \
   --key grad_norm \
-  --save_path experiments/nonconvex_fmnist/grad_norm_sgd_svrg.png
+  --save_path experiments/nonconvex_fmnist/gradnorm_sgd_lr001_svrg_lr0005.png
 
 python plot.py \
   --run_paths experiments/nonconvex_fmnist/sgd-0.01.json experiments/nonconvex_fmnist/svrg-0.005.json \
   --key train_loss \
-  --save_path experiments/nonconvex_fmnist/train_loss_sgd_svrg.png
+  --save_path experiments/nonconvex_fmnist/trainloss_sgd_lr001_svrg_lr0005.png
 
 python plot.py \
     --run_paths experiments/nonconvex_fmnist/warmup-*.json \
