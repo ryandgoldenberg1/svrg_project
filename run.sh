@@ -17,7 +17,7 @@ python train.py \
     --num_epochs 260
 
 python train.py \
-    --seed 79 \
+    --seed 83 \
     --optimizer SGD \
     --run_name sgd-0.01.json \
     --output_path experiments/nonconvex_cifar10/sgd-0.01.json \
@@ -43,7 +43,7 @@ python train.py \
 for d in 'MNIST' 'CIFAR10' 'STL'; do
   echo "Running SVRG"
   python train.py \
-    --seed 79 \
+    --seed 77 \
     --optimizer SVRG \
     --run_name svrg_0.05.json \
     --output_path experiments/nonconvex_$d/svrg-0.05.json \
