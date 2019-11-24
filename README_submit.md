@@ -29,6 +29,7 @@ python train.py \
  
  ```bash
 python train.py \
+  --seed 83 \
   --optimizer SGD \
   --run_name sgd_0.001.json \
   --output_path experiments/nonconvex_cifar10/sgd-0.001.json \
@@ -63,6 +64,7 @@ python train.py \
 
 ```bash
 python train.py \
+  --seed 79 \
   --optimizer SGD \
   --run_name sgd_0.001.json \
   --output_path experiments/nonconvex_mnist/sgd-0.001.json \
@@ -97,6 +99,7 @@ python train.py \
 ```
 ```bash
 python train.py \
+  --seed 77 \
   --optimizer SGD \
   --run_name sgd_0.001.json \
   --output_path experiments/nonconvex_stl10/sgd-0.001.json \
@@ -111,7 +114,7 @@ python train.py \
 ```
 
 # Critical evaluatin result
-## MNIST with deeper network
+## SVRG MNIST with deeper network
 ```
 python train.py \
   --seed 79 \
@@ -130,6 +133,24 @@ python train.py \
   --device cuda \
   --download
 ```
+## SGD MNIST with deeper network
+
+```bash
+python train.py \
+  --seed 79 \
+  --optimizer SGD \
+  --run_name sgd_0.01.json \
+  --output_path experiments/nonconvex_mnist_deep/sgd-0.01.json \
+  --dataset MNIST \
+  --layer_sizes 784 600 300 10 \
+  --batch_size 10 \
+  --learning_rate 0.01 \
+  --weight_decay 0.001 \
+  --num_epochs 300 \
+  --device cuda
+done
+```
+
 ## FMNIST
 ```bash
 python train.py \
