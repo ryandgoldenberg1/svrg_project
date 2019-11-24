@@ -14,7 +14,7 @@ python train.py \
     --batch_size 10 \
     --learning_rate 0.01 \
     --weight_decay 0.001 \
-    --num_epochs 260
+    --num_epochs 300
 
 python train.py \
     --seed 83 \
@@ -26,7 +26,7 @@ python train.py \
     --batch_size 10 \
     --learning_rate 0.01 \
     --weight_decay 0.001 \
-    --num_epochs 260
+    --num_epochs 300
 
 python train.py \
     --seed 79 \
@@ -38,7 +38,7 @@ python train.py \
     --batch_size 10 \
     --learning_rate 0.01 \
     --weight_decay 0.001 \
-    --num_epochs 260
+    --num_epochs 300
 
 for d in 'MNIST' 'CIFAR10' 'STL'; do
   echo "Running SVRG"
