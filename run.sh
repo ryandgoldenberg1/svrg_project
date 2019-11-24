@@ -5,6 +5,7 @@ echo "Running reproducibility experiment on MNIST, CIFAR10 and STL"
 
 echo "Running SGD"
 python train.py \
+    --seed 79 \
     --optimizer SGD \
     --run_name sgd-0.01.json \
     --output_path experiments/nonconvex_mnist/sgd-0.01.json \
@@ -16,6 +17,7 @@ python train.py \
     --num_epochs 260
 
 python train.py \
+    --seed 79 \
     --optimizer SGD \
     --run_name sgd-0.01.json \
     --output_path experiments/nonconvex_cifar10/sgd-0.01.json \
@@ -27,6 +29,7 @@ python train.py \
     --num_epochs 260
 
 python train.py \
+    --seed 79 \
     --optimizer SGD \
     --run_name sgd-0.01.json \
     --output_path experiments/nonconvex_stl10/sgd-0.01.json \
