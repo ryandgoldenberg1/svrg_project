@@ -1,13 +1,22 @@
-Following command shown how to run the experiment. For generating plot used in paper, please refer to run_plot.sh.
+Following command shown how to run the experiment. 
 
 # Requrement
   - Python3
   - pytorch >=1.3
-  
+  - cuda gpu
 Note that if you don't have cuda device, you should turn off the `--device cuda` flag.
 
-# Reproducibility of paper result
-## CIFAR 10
+# Instruction to run the code
+If you just want to generate the plot used in the report
+  * Download the experiment result from the experiment results then unzip
+  * `. run_plot.sh`
+
+If you want to re-run all experiments that generate the figure (WARNING: May take around a week in single node)
+  * `. run.sh`
+  
+If you just want to run some parts of experiment, 
+## Reproducibility of paper result
+### SVRG CIFAR 10
 ```bash
 python train.py \
   --seed 83 \
@@ -26,7 +35,7 @@ python train.py \
   --device cuda \
   --download
  ```
- 
+### SGD CIFAR 10
  ```bash
 python train.py \
   --seed 83 \
@@ -42,7 +51,7 @@ python train.py \
   --device cuda \
   --download
  ```
-## MNIST
+### SVRG MNIST
 ```bash
 python train.py \
   --seed 79 \
@@ -61,7 +70,7 @@ python train.py \
   --device cuda \
   --download
 ```
-
+### SGD MNIST
 ```bash
 python train.py \
   --seed 79 \
@@ -78,7 +87,7 @@ python train.py \
   --download
 ```
 
-## STL
+### SVRG STL
 ```
 python train.py \
   --seed 77 \
@@ -97,6 +106,7 @@ python train.py \
   --device cuda \
   --download
 ```
+### SGD STL
 ```bash
 python train.py \
   --seed 77 \
@@ -113,8 +123,8 @@ python train.py \
   --download
 ```
 
-# Critical evaluatin result
-## SVRG MNIST with deeper network
+## Critical evaluatin result
+### SVRG MNIST with deeper network
 ```
 python train.py \
   --seed 79 \
@@ -133,7 +143,7 @@ python train.py \
   --device cuda \
   --download
 ```
-## SGD MNIST with deeper network
+### SGD MNIST with deeper network
 
 ```bash
 python train.py \
@@ -151,7 +161,7 @@ python train.py \
 done
 ```
 
-## FMNIST
+### SVRG FMNIST
 ```bash
 python train.py \
   --seed 79 \
@@ -170,10 +180,28 @@ python train.py \
   --device cuda \
   --download
 ``` 
-# Running Hyperparameter search
+
+### SGD FMNIST
+```bash
+python train.py \
+  --seed 79 \
+  --optimizer SGD \
+  --run_name sgd_0.01.json \
+  --output_path experiments/nonconvex_fmnist_deep/sgd-0.01.json \
+  --dataset MNIST \
+  --layer_sizes 784 100 10 \
+  --batch_size 10 \
+  --learning_rate 0.01 \
+  --weight_decay 0.001 \
+  --num_epochs 300 \
+  --device cuda
+done
+```
+
+## Running Hyperparameter search
 Pleae open any new `.sh` file and paste the corresponding code to run
 
-## SVRG CIFAR 10
+### SVRG CIFAR 10
 ```bash
 # Warmup Learning Rate Search
 for lr in 0.5 0.25 0.1 0.03 0.01 0.001; do python train.py \
@@ -210,7 +238,7 @@ for lr in 0.5 0.25 0.1 0.05 0.025 0.01 0.005 0.001; do python train.py \
 done
 ```
 
-## SVRG MNIST
+### SVRG MNIST
 ```bash
 for lr in 0.5 0.25 0.1 0.03 0.01 0.001; do 
 python train.py \
@@ -247,7 +275,7 @@ python train.py \
 done
 ```
 
-## SVRG STL
+### SVRG STL
 ```bash
 for lr in 0.5 0.25 0.1 0.03 0.01 0.001; do python train.py \
   --seed 12 \
@@ -281,7 +309,7 @@ for lr in 0.5 0.25 0.1 0.05 0.025 0.01 0.005 0.001; do python train.py \
   --download
 done
 ```
-## SVRG MNIST with deeper network
+### SVRG MNIST with deeper network
 ```bash
 for lr in 0.5 0.25 0.1 0.05 0.025 0.01 0.005 0.001; do python train.py \
   --seed 79 \
@@ -302,7 +330,7 @@ for lr in 0.5 0.25 0.1 0.05 0.025 0.01 0.005 0.001; do python train.py \
 done
 ```
 
-## SVRG FMNIST
+### SVRG FMNIST
 ```bash
 for lr in 0.5 0.25 0.1 0.05 0.025 0.01 0.005 0.001; do python train.py \
   --seed 79 \
