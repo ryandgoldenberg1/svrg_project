@@ -26,6 +26,21 @@ python train.py \
   --device cuda \
   --download
  ```
+ 
+ ```bash
+python train.py \
+  --optimizer SGD \
+  --run_name svrg_0.001.json \
+  --output_path experiments/nonconvex_cifar10/sgd-0.001.json \
+  --dataset CIFAR10 \
+  --layer_sizes 3072 100 10 \
+  --batch_size 10 \
+  --learning_rate 0.001 \
+  --weight_decay 0.001 \
+  --num_epochs 260
+  --device cuda \
+  --download
+ ```
 ## MNIST
 ```bash
 python train.py \
